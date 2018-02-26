@@ -6,39 +6,38 @@
 
 :Author: Vinay Sajip <vinay_sajip at red-dove dot com>
 
-This page contains a number of recipes related to logging, which have been found
-useful in the past.
+이 페이지는 유용한 로깅(logging) 관련 래피시를 포함한다.
 
 .. currentmodule:: logging
 
-Using logging in multiple modules
+다수의 모듈에서 로깅 사용
 ---------------------------------
 
-Multiple calls to ``logging.getLogger('someLogger')`` return a reference to the
-same logger object.  This is true not only within the same module, but also
-across modules as long as it is in the same Python interpreter process.  It is
-true for references to the same object; additionally, application code can
-define and configure a parent logger in one module and create (but not
-configure) a child logger in a separate module, and all logger calls to the
-child will pass up to the parent.  Here is a main module::
+``logging.getLogger('someLogger')``\ 로 여러개의 호출이 보내지면 동일한 로거(logger) 객체로의 참조를 반환한다.
+이는 같은 모듈뿐 아니라 같은 파이썬 인터프리터를 사용하는 다른 모듈에서 호출했을 때도 마찬가지이다.
+같은 객체로의 참조에서도 동일하다.
+또 어플리케이션 코드가 하나의 모듈에서 부모 로거를 정의하고 설정한 다음
+다른 모듈에서 자식 로거를 생성하는 것도 가능하다.
+자식 로거 호출은 모두 부모 로거로 전달된다.
+다음은 메인 모듈의 예시다. ::
 
     import logging
     import auxiliary_module
 
-    # create logger with 'spam_application'
+    # 'spam_application' 로거 생성
     logger = logging.getLogger('spam_application')
     logger.setLevel(logging.DEBUG)
-    # create file handler which logs even debug messages
+    # 디버그 메세지를 포함하는 파일 핸들러 생성
     fh = logging.FileHandler('spam.log')
     fh.setLevel(logging.DEBUG)
-    # create console handler with a higher log level
+    # 더 상위의 콘솔 핸들러 생성
     ch = logging.StreamHandler()
     ch.setLevel(logging.ERROR)
-    # create formatter and add it to the handlers
+    # 핸들러에 포맷을 추가
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)
-    # add the handlers to the logger
+    # 핸들러를 로거에 추가
     logger.addHandler(fh)
     logger.addHandler(ch)
 
@@ -52,11 +51,11 @@ child will pass up to the parent.  Here is a main module::
     auxiliary_module.some_function()
     logger.info('done with auxiliary_module.some_function()')
 
-Here is the auxiliary module::
+다음은 보조 모듈이다. ::
 
     import logging
 
-    # create logger
+    # 로거 생성
     module_logger = logging.getLogger('spam_application.auxiliary')
 
     class Auxiliary:
@@ -72,7 +71,7 @@ Here is the auxiliary module::
     def some_function():
         module_logger.info('received a call to "some_function"')
 
-The output looks like this::
+다음과 같은 출력이 나타난다.::
 
     2005-03-23 23:47:11,663 - spam_application - INFO -
        creating an instance of auxiliary_module.Auxiliary
@@ -95,11 +94,11 @@ The output looks like this::
     2005-03-23 23:47:11,673 - spam_application - INFO -
        done with auxiliary_module.some_function()
 
-Logging from multiple threads
+멀티스레드 로깅
 -----------------------------
 
-Logging from multiple threads requires no special effort. The following example
-shows logging from the main (initial) thread and another thread::
+멀티스레드에서 로깅할 때도 특별한 노력이 필요치 않다.
+다음은 메인(최초) 스레드와 다른 스레드로부터의 로깅 예시다. ::
 
     import logging
     import threading
@@ -127,7 +126,7 @@ shows logging from the main (initial) thread and another thread::
     if __name__ == '__main__':
         main()
 
-When run, the script should print something like the following::
+실행되었을 때 스크립트는 다음과 같은 내용을 출력해야 한다. ::
 
      0 Thread-1 Hi from myfunc
      3 MainThread Hello from main
@@ -147,19 +146,15 @@ When run, the script should print something like the following::
   4513 MainThread Hello from main
   4518 Thread-1 Hi from myfunc
 
-This shows the logging output interspersed as one might expect. This approach
-works for more threads than shown here, of course.
+예상한대로 로그 출력이 나타난다. 이 방법은 더 많은 스레드에도 잘작동한다.
 
-Multiple handlers and formatters
+다수의 핸들러와 포매터
 --------------------------------
 
-Loggers are plain Python objects.  The :meth:`~Logger.addHandler` method has no
-minimum or maximum quota for the number of handlers you may add.  Sometimes it
-will be beneficial for an application to log all messages of all severities to a
-text file while simultaneously logging errors or above to the console.  To set
-this up, simply configure the appropriate handlers.  The logging calls in the
-application code will remain unchanged.  Here is a slight modification to the
-previous simple module-based configuration example::
+로거는 순수 파이썬 객체다. :meth:`~Logger.addHandler` 메서드는 추가할 수 있는 핸들러 갯수의 한계가 없다.
+모든 중요도의 모든 메세지를 텍스트 파일로 로그하면서 동시에 에러를 로그하거나 콘솔로 로그을 보내는 것이 어플리케이션에는 좋을 것이다.
+이러한 설정을 하기 위해 간단하게 적절한 핸들러를 설정하면 된다. 어플리케이션 코드 내부의 로깅 호출은 수정되지 않은 채로 남는다.
+다음 코드는 이전에 사용한 간단한 모듈 베이스 설정 예시를 조금 수정한 것이다. ::
 
     import logging
 
@@ -186,27 +181,24 @@ previous simple module-based configuration example::
     logger.error('error message')
     logger.critical('critical message')
 
-Notice that the 'application' code does not care about multiple handlers.  All
-that changed was the addition and configuration of a new handler named *fh*.
+위 예시의 `application' 코드는 여러 핸들러에 관여하지 않는다.
+*fh*라는 이름의 새 핸들러를 추가하고 설정하기만 했다.
 
-The ability to create new handlers with higher- or lower-severity filters can be
-very helpful when writing and testing an application.  Instead of using many
-``print`` statements for debugging, use ``logger.debug``: Unlike the print
-statements, which you will have to delete or comment out later, the logger.debug
-statements can remain intact in the source code and remain dormant until you
-need them again.  At that time, the only change that needs to happen is to
-modify the severity level of the logger and/or handler to debug.
+중요도 순위가 높거나 낮은 새 핸들러를 만들면 어플리케이션을 테스트하는데 유용하다.
+디버깅을 위해 ``print`` 선언을 작성하는 대신 ``logger.debug``\ 를 사용할 수 있다.
+이후에 삭제하거나 주석 처리해야 하는 ``print`` 선언과 달리 ``loger.debug``\ 선언은 소스 코드에 그대로 남아
+다시 필요해질 때까지 비활성화되어 있을 수 있다.
+``loger.debug``\ 가 다시 필요해지면 디버그할 로거나 핸들러의 중요도 레벨을 변경하면 된다.
 
 .. _multiple-destinations:
 
-Logging to multiple destinations
+다수의 목적지로의 로깅
 --------------------------------
 
-Let's say you want to log to console and file with different message formats and
-in differing circumstances. Say you want to log messages with levels of DEBUG
-and higher to file, and those messages at level INFO and higher to the console.
-Let's also assume that the file should contain timestamps, but the console
-messages should not. Here's how you can achieve this::
+콘솔과 파일에 각각 다른 상황에서 다른 메세지 포맷을 로그를 하길 원할 수 있다.
+DEBUG와 보다 높은 레벨의 메세지는 파일에, INFO와 보다 높은 레벨의 메세지는 콘솔에 로그하고 싶다고 하자.
+파일은 타임스탬프를 포함해야 하고 콘솔은 포함해선 안되는 상황이다.
+다음은 이러한 상황에 사용할 수 있는 예시다. ::
 
    import logging
 
@@ -240,14 +232,14 @@ messages should not. Here's how you can achieve this::
    logger2.warning('Jail zesty vixen who grabbed pay from quack.')
    logger2.error('The five boxing wizards jump quickly.')
 
-When you run this, on the console you will see ::
+위 코드를 실행하면 콘솔에 다음과 같이 나타난다. ::
 
    root        : INFO     Jackdaws love my big sphinx of quartz.
    myapp.area1 : INFO     How quickly daft jumping zebras vex.
    myapp.area2 : WARNING  Jail zesty vixen who grabbed pay from quack.
    myapp.area2 : ERROR    The five boxing wizards jump quickly.
 
-and in the file you will see something like ::
+파일에는 다음과 같이 나타난다. ::
 
    10-22 22:19 root         INFO     Jackdaws love my big sphinx of quartz.
    10-22 22:19 myapp.area1  DEBUG    Quick zephyrs blow, vexing daft Jim.
@@ -255,17 +247,15 @@ and in the file you will see something like ::
    10-22 22:19 myapp.area2  WARNING  Jail zesty vixen who grabbed pay from quack.
    10-22 22:19 myapp.area2  ERROR    The five boxing wizards jump quickly.
 
-As you can see, the DEBUG message only shows up in the file. The other messages
-are sent to both destinations.
+예시에서 볼 수 있듯이 DEBUG 메세지는 파일에만 나타난다. 다른 메세지는 파일과 콘솔에 모두 나타난다.
 
-This example uses console and file handlers, but you can use any number and
-combination of handlers you choose.
+이 예시는 콘솔과 파일 핸들러를 사용하지만 다른 핸들러 조합을 사용할 수도 있다.
 
 
-Configuration server example
+서버 설정의 예
 ----------------------------
 
-Here is an example of a module using the logging configuration server::
+다음 예시는 로깅 설정 서버 모듈의 예다. ::
 
     import logging
     import logging.config
@@ -296,9 +286,8 @@ Here is an example of a module using the logging configuration server::
         logging.config.stopListening()
         t.join()
 
-And here is a script that takes a filename and sends that file to the server,
-properly preceded with the binary-encoded length, as the new logging
-configuration::
+다음 스크립트는 파일명을 받아서 해당 파일을 서버로 보낸다.
+바이너리 인코딩된 파일 길이를 먼저 보내면 로그 설정을 새로 할 수 있다.::
 
     #!/usr/bin/env python
     import socket, sys, struct
@@ -318,48 +307,39 @@ configuration::
     print('complete')
 
 
-Dealing with handlers that block
+블럭하는 핸들러 해결하기
 --------------------------------
 
 .. currentmodule:: logging.handlers
 
-Sometimes you have to get your logging handlers to do their work without
-blocking the thread you're logging from. This is common in Web applications,
-though of course it also occurs in other scenarios.
+사용자가 로깅하는 스레드를 블럭하지 않고 로깅 핸들러가 작업을 수행하게 해야하는 경우가 있다.
+웹 어플리케이션에서는 자주 있는 일이지만 다른 시나리오에서도 발생할 수 있다.
 
-A common culprit which demonstrates sluggish behaviour is the
-:class:`SMTPHandler`: sending emails can take a long time, for a
-number of reasons outside the developer's control (for example, a poorly
-performing mail or network infrastructure). But almost any network-based
-handler can block: Even a :class:`SocketHandler` operation may do a
-DNS query under the hood which is too slow (and this query can be deep in the
-socket library code, below the Python layer, and outside your control).
+속도가 저하되는 주범은 대체로 :class:`SMTPHandler`: 때문이다.
+이메일을 보내는데 시간이 오래 걸리기 때문인데
+이는 개발자가 제어할 수 없는 원인들로 인한 것이다.
+하지만 이 외에도 대부분의 네트워크 기반 핸들러에서 블럭이 발생한다.
+:class:`SocketHandler` 작업도 밑단에서 DNS 쿼리를 할 수 있는데 이 때는 속도가 매우 느려진다.
+(이 쿼리는 파이썬 레이어 아래의 소켓 라이브러리 코드 깊은 곳에 있을 수 있고 제어할 수 없다.)
 
-One solution is to use a two-part approach. For the first part, attach only a
-:class:`QueueHandler` to those loggers which are accessed from
-performance-critical threads. They simply write to their queue, which can be
-sized to a large enough capacity or initialized with no upper bound to their
-size. The write to the queue will typically be accepted quickly, though you
-will probably need to catch the :exc:`queue.Full` exception as a precaution
-in your code. If you are a library developer who has performance-critical
-threads in their code, be sure to document this (together with a suggestion to
-attach only ``QueueHandlers`` to your loggers) for the benefit of other
-developers who will use your code.
+이 문제의 해결책은 두 부분으로 나누어 접근한다.
+우선, 성능이 중요한 스레드가 접근하는 로거는 :class:`QueueHandler` 만을 사용한다.
+이 로거는 큐에 로그를 쌓게 되는데 큐의 크기는 상한선이 없거나 충분히 큰 용량이어야 한다.
+큐에 쓰는 속도는 충분히 빠르다. 다만 혹시 발생할 수도 있는 :exc:`queue.Full` 예외를 잡아내야 한다.
+라이브러리 개발자이고 성능이 중요한 스레드가 있다면 코드를 사용하는 다른 개발자를 위해 이와 관련된 사항을 반드시 문서화한다.
+(로거에 ``QueueHandlers`` 만을 두라는 제안과 함께)
 
-The second part of the solution is :class:`QueueListener`, which has been
-designed as the counterpart to :class:`QueueHandler`.  A
-:class:`QueueListener` is very simple: it's passed a queue and some handlers,
-and it fires up an internal thread which listens to its queue for LogRecords
-sent from ``QueueHandlers`` (or any other source of ``LogRecords``, for that
-matter). The ``LogRecords`` are removed from the queue and passed to the
-handlers for processing.
+해결책의 두번째 부분은 :class:`QueueHandler`\ 에 대응하여 고안된 :class:`QueueListener`\ 다.
+:class:`QueueListener`\ 는 매우 간단하다. 큐와 핸들러를 받아서 이 큐에 저장할
+``QueueHandlers``\ 나 다른 ``LogRecords`` 소스로부터 보내진 LogRecords를 받는 내부 스레드를 작동시킨다.
+저장된 ``LogRecords``\ 는 추후 큐에서 삭제되고 처리를 위해 핸들러로 보내진다.
 
-The advantage of having a separate :class:`QueueListener` class is that you
-can use the same instance to service multiple ``QueueHandlers``. This is more
-resource-friendly than, say, having threaded versions of the existing handler
-classes, which would eat up one thread per handler for no particular benefit.
+별개의 :class:`QueueListener` 클래스를 만들 때의 장점은
+같은 인스턴스로 다수의 ``QueueHandlers``\ 를 서비스할 수 있다는 것이다.
+기존의 핸들러 클래스를 스레드로 만들면 된 핸들러당 스레드 하나를 잡아 먹기 때문에
+:class:`QueueListener`\ 를 쓰는 것이 리소스 친화적이다.
 
-An example of using these two classes follows (imports omitted)::
+다음은 위 해결책의 예시다.(import 생략) ::
 
     que = queue.Queue(-1)  # no limit on size
     queue_handler = QueueHandler(que)
@@ -377,30 +357,25 @@ An example of using these two classes follows (imports omitted)::
     root.warning('Look out!')
     listener.stop()
 
-which, when run, will produce:
+실행하면 다음이 나타난다.
 
 .. code-block:: none
 
     MainThread: Look out!
 
 .. versionchanged:: 3.5
-   Prior to Python 3.5, the :class:`QueueListener` always passed every message
-   received from the queue to every handler it was initialized with. (This was
-   because it was assumed that level filtering was all done on the other side,
-   where the queue is filled.) From 3.5 onwards, this behaviour can be changed
-   by passing a keyword argument ``respect_handler_level=True`` to the
-   listener's constructor. When this is done, the listener compares the level
-   of each message with the handler's level, and only passes a message to a
-   handler if it's appropriate to do so.
+   파이썬 3.5 이전의 :class:`QueueListener`\ 는 함께 초기화된 모든 핸들러로의 큐로부터 받은 메세지를 항상 보냈다.
+   (이는 큐가 채워진 곳에서 레벨 필터링이 모두 끝났다고 가정하기 때문이다.)
+   파이썬 3.5부터는 키워드 인수 ``respect_handler_level=True``\ 를 모든 리스너 구조로 보내는 것으로 변경됐다.
+   키워드 인수가 보내지면 리스너는 각 메세지의 레벨과 핸들러 레벨을 비교하고 적합한 경우에만 핸들러로 메세지를 보낸다.
 
 .. _network-logging:
 
-Sending and receiving logging events across a network
+네트워크를 통해 로깅 이벤트 보내기/받기
 -----------------------------------------------------
 
-Let's say you want to send logging events across a network, and handle them at
-the receiving end. A simple way of doing this is attaching a
-:class:`SocketHandler` instance to the root logger at the sending end::
+네트워크를 통해 로깅 이벤트를 보내고 수신단에서 메세지를 처리하고자 한다면
+송신단의 루트 로거에 :class:`SocketHandler` 인스턴스를 두면 된다. ::
 
    import logging, logging.handlers
 
@@ -426,8 +401,7 @@ the receiving end. A simple way of doing this is attaching a
    logger2.warning('Jail zesty vixen who grabbed pay from quack.')
    logger2.error('The five boxing wizards jump quickly.')
 
-At the receiving end, you can set up a receiver using the :mod:`socketserver`
-module. Here is a basic working example::
+수신단에서는 :mod:`socketserver` 모듈로 리시버를 설정할 수 있다. 다음은 기본적인 작동 예시다. ::
 
    import pickle
    import logging
@@ -514,8 +488,8 @@ module. Here is a basic working example::
    if __name__ == '__main__':
        main()
 
-First run the server, and then the client. On the client side, nothing is
-printed on the console; on the server side, you should see something like::
+먼저 서버를 실행하고 그 다음에 클라이언트를 실행한다. 클라이언트에서 콘솔에는 아무것도 나타나지 않는다.
+반대로 서버에서는 다음과 같이 나타날 것이다. ::
 
    About to start TCP server...
       59 root            INFO     Jackdaws love my big sphinx of quartz.
@@ -524,50 +498,45 @@ printed on the console; on the server side, you should see something like::
       69 myapp.area2     WARNING  Jail zesty vixen who grabbed pay from quack.
       69 myapp.area2     ERROR    The five boxing wizards jump quickly.
 
-Note that there are some security issues with pickle in some scenarios. If
-these affect you, you can use an alternative serialization scheme by overriding
-the :meth:`~handlers.SocketHandler.makePickle` method and implementing your
-alternative there, as well as adapting the above script to use your alternative
-serialization.
+가끔 피클(pickle)과 관련된 보안 문제가 발생할 수 있다..
+보안이 문제가 되면 :meth:`~handlers.SocketHandler.makePickle` 메서드를 덮어쓰고
+그 곳에 대안을 구현해 직렬화 스키마를 대체하는 자체적인 직렬화 스키마를 사용하면 된다.
+추가로 위의 스크립트를 대체 직렬화에 적용할 수 있다.
 
 
 .. _context-info:
 
-Adding contextual information to your logging output
+로그 출력에 맥락 정보 추가하기
 ----------------------------------------------------
 
-Sometimes you want logging output to contain contextual information in
-addition to the parameters passed to the logging call. For example, in a
-networked application, it may be desirable to log client-specific information
-in the log (e.g. remote client's username, or IP address). Although you could
-use the *extra* parameter to achieve this, it's not always convenient to pass
-the information in this way. While it might be tempting to create
-:class:`Logger` instances on a per-connection basis, this is not a good idea
-because these instances are not garbage collected. While this is not a problem
-in practice, when the number of :class:`Logger` instances is dependent on the
-level of granularity you want to use in logging an application, it could
-be hard to manage if the number of :class:`Logger` instances becomes
-effectively unbounded.
+로깅 출력이 로킹 호출에 보내진 매개 변수 혹은 맥락 정보를 포함하길 원할 수 있다.
+예를 들어, 네트워크화된 어플리케이션에서 리모트 클라이언트의 사용자명이나 IP 주소 같은
+클라이언트 특정 정보를 로그에 포함하는 것이 좋을 수 있다.
+*extra* 매개 변수로 이를 구현할 수도 있지만 이 방법이 항상 편리한 것은 아니다.
+연결마다 :class:`Logger` 인스턴스를 생성하는 것도
+생성된 인스턴스가 가비지 수집이 되지 않기 때문에 좋은 방법은 아니다.
+이것은 실제로 문제가 되지 않는다. 하지만 :class:`Logger` 인스턴스의 갯수가
+어플리케이션을 로깅하는데 사용되는 세분화 정도에 의존하면
+:class:`Logger` 인스턴스의 갯수가 실질적으로 무제한이 되어 관리하기 어려워질 수 있다.
 
 
-Using LoggerAdapters to impart contextual information
+LoggerAdapters를 사용해서 맥락 정보 보내기
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-An easy way in which you can pass contextual information to be output along
-with logging event information is to use the :class:`LoggerAdapter` class.
-This class is designed to look like a :class:`Logger`, so that you can call
-:meth:`debug`, :meth:`info`, :meth:`warning`, :meth:`error`,
-:meth:`exception`, :meth:`critical` and :meth:`log`. These methods have the
-same signatures as their counterparts in :class:`Logger`, so you can use the
-two types of instances interchangeably.
+출력에 로깅 이벤트 정보뿐 아니라 맥락 정보를 포함하는 쉬운 방법은
+:class:`LoggerAdapter` 클래스를 사용하는 것이다.
+이 클래스는 :class:`Logger`\ 처럼 고안되었기 때문에
+:meth:`debug`, :meth:`info`, :meth:`warning`,
+:meth:`error`, :meth:`exception`, :meth:`critical`, :meth:`log`\ 를 호출할 수 있다.
+이 메서드들은 :class:`Logger`\ 의 같은 메서드와 동일한 함수 호출형식을 가진다.
+따라서 두가지 인스턴스는 교체 가능하다.
 
-When you create an instance of :class:`LoggerAdapter`, you pass it a
-:class:`Logger` instance and a dict-like object which contains your contextual
-information. When you call one of the logging methods on an instance of
-:class:`LoggerAdapter`, it delegates the call to the underlying instance of
-:class:`Logger` passed to its constructor, and arranges to pass the contextual
-information in the delegated call. Here's a snippet from the code of
-:class:`LoggerAdapter`::
+:class:`LoggerAdapter` 인스턴스를 생성할 때 :class:`Logger` 인스턴스와
+맥락 정보를 포함한 딕셔너리형 객체를 보낸다.
+:class:`LoggerAdapter` 인스턴스의 로깅 메서드를 호출하면
+생성자로 보내질 밑단의 :class:`Logger` 인스턴스로의 호출을 위임하고
+위임된 호출에 있는 맥락 정보를 보내기 위해 정리한다.
+다음은 :class:`LoggerAdapter`\ 의 코드다. ::
 
     def debug(self, msg, *args, **kwargs):
         """
@@ -577,22 +546,21 @@ information in the delegated call. Here's a snippet from the code of
         msg, kwargs = self.process(msg, kwargs)
         self.logger.debug(msg, *args, **kwargs)
 
-The :meth:`~LoggerAdapter.process` method of :class:`LoggerAdapter` is where the
-contextual information is added to the logging output. It's passed the message
-and keyword arguments of the logging call, and it passes back (potentially)
-modified versions of these to use in the call to the underlying logger. The
-default implementation of this method leaves the message alone, but inserts
-an 'extra' key in the keyword argument whose value is the dict-like object
-passed to the constructor. Of course, if you had passed an 'extra' keyword
-argument in the call to the adapter, it will be silently overwritten.
+:class:`LoggerAdapter`\ 의 :meth:`~LoggerAdapter.process` 메서드에서 맥락 정보를 로깅 출력에 추가한다.
+로깅 호출의 메세지와 키워드 인수를 받고
+밑단의 로거 호출에서 사용되도록 수정된 메세지와 키워드 인수를 돌려 보낸다.
+이 메서드의 기본 구현은 메세지만으로 구성되지만
+생성자로 보내질 딕셔너리형 객체를 값으로 갖는 'extra' 키를 인수로 넣을 수 있다.
+당연히 'extra' 키워드 인수를 어댑터로의 호출에 보냈다면 자동으로 덮어써진다.
 
-The advantage of using 'extra' is that the values in the dict-like object are
-merged into the :class:`LogRecord` instance's __dict__, allowing you to use
-customized strings with your :class:`Formatter` instances which know about
-the keys of the dict-like object. If you need a different method, e.g. if you
-want to prepend or append the contextual information to the message string,
-you just need to subclass :class:`LoggerAdapter` and override
-:meth:`~LoggerAdapter.process` to do what you need. Here is a simple example::
+'extra' 키워드를 사용하는 장점은
+딕셔너리형 객체의 값이 :class:`LogRecord` 인스턴스의 __dict__에 합쳐진다는 것이다.
+이를 통해 딕셔너리형 객체의 키 값을 알고 있는 :class:`Formatter` 인스턴스와
+사용자 지정된 문자열을 사용할 수 있다.
+메세지 문자열에 맥락 정보를 붙여야 하는 경우와 같이 다른 메서드가 필요할 때는
+:class:`LoggerAdapter`\ 를 서브클래싱하여
+:meth:`~LoggerAdapter.process`\ 를 원하는 기능을 하도록 오버라이딩하면 된다.
+다음은 이와 관련된 간단한 예시다. ::
 
     class CustomAdapter(logging.LoggerAdapter):
         """
@@ -602,41 +570,37 @@ you just need to subclass :class:`LoggerAdapter` and override
         def process(self, msg, kwargs):
             return '[%s] %s' % (self.extra['connid'], msg), kwargs
 
-which you can use like this::
+위 어댑터는 다음과 같이 사용할 수 있다. ::
 
     logger = logging.getLogger(__name__)
     adapter = CustomAdapter(logger, {'connid': some_conn_id})
 
-Then any events that you log to the adapter will have the value of
-``some_conn_id`` prepended to the log messages.
+이제 어댑터로 로그하는 모든 이벤트는 로그 메세지에 붙여질 ``some_conn_id`` 값을 갖는다.
 
-Using objects other than dicts to pass contextual information
+딕셔너리형이 아닌 객체로 맥락 정보 보내기
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You don't need to pass an actual dict to a :class:`LoggerAdapter` - you could
-pass an instance of a class which implements ``__getitem__`` and ``__iter__`` so
-that it looks like a dict to logging. This would be useful if you want to
-generate values dynamically (whereas the values in a dict would be constant).
+실제 딕셔너리를 :class:`LoggerAdapter`\ 에 보낼 필요는 없다.
+``__getitem__``\ 과 ``__iter__``\ 를 구현해
+로깅에는 딕셔너리와 같이 보이는 클래스의 인스턴스를 보낼 수 있다.
+값이 고정된 딕셔너리와 달리 유동적인 값을 만들고자 하는 경우에 유용하다.
 
 
 .. _filters-contextual:
 
-Using Filters to impart contextual information
+필터를 사용해 맥락 정보 보내기
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can also add contextual information to log output using a user-defined
-:class:`Filter`. ``Filter`` instances are allowed to modify the ``LogRecords``
-passed to them, including adding additional attributes which can then be output
-using a suitable format string, or if needed a custom :class:`Formatter`.
+사용자 정의된 :class:`Filter`\ 를 보내 맥락 정보를 로그 출력에 추가할 수 있다.
+``Filter`` 인스턴스는 필터로 보내질 ``LogRecords``\ 를 수정할 수 있다.
+수정을 통해 적절한 포맷 문자열을 사용하는 출력이 될 수 있는 추가 인수나
+필요한 경우에 커스텀 :class:`Formatter`\ 를 추가할 수 있다.
 
-For example in a web application, the request being processed (or at least,
-the interesting parts of it) can be stored in a threadlocal
-(:class:`threading.local`) variable, and then accessed from a ``Filter`` to
-add, say, information from the request - say, the remote IP address and remote
-user's username - to the ``LogRecord``, using the attribute names 'ip' and
-'user' as in the ``LoggerAdapter`` example above. In that case, the same format
-string can be used to get similar output to that shown above. Here's an example
-script::
+웹 어플리케이션과 같은 예시에서는
+처리중인 리퀘스트나 리퀘스트 중 관심 있는 부분을 스레드 로컬(:class:`threading.local`) 변수에 저장하고
+``Filter``\ 가 접근해 리퀘스트로부터의 정보를 ``LogRecord``\ 에 추가할 수 있다.
+예를 들어, 위의 ``LoggerAdapter`` 예시처럼 원격 IP 주소와 사용자명을 각각 속성명 'ip'와 'user'를 사용해 보낸다.
+동일한 포맷 문자열을 사용해 위 예시와 유사한 출력을 얻을 수 있다. 다음은 예시 스크립트다. ::
 
     import logging
     from random import choice
@@ -675,7 +639,7 @@ script::
             lvlname = logging.getLevelName(lvl)
             a2.log(lvl, 'A message at %s level with %d %s', lvlname, 2, 'parameters')
 
-which, when run, produces something like::
+위 스크립트를 실행하면 다음과 같은 결과가 나타난다. ::
 
     2010-09-06 22:38:15,292 a.b.c DEBUG    IP: 123.231.231.123 User: fred     A debug message
     2010-09-06 22:38:15,300 a.b.c INFO     IP: 192.168.0.1     User: sheila   An info message with some parameters
@@ -693,43 +657,37 @@ which, when run, produces something like::
 
 .. _multiple-processes:
 
-Logging to a single file from multiple processes
+다수의 프로세스에서 하나의 파일로 로깅
 ------------------------------------------------
 
-Although logging is thread-safe, and logging to a single file from multiple
-threads in a single process *is* supported, logging to a single file from
-*multiple processes* is *not* supported, because there is no standard way to
-serialize access to a single file across multiple processes in Python. If you
-need to log to a single file from multiple processes, one way of doing this is
-to have all the processes log to a :class:`~handlers.SocketHandler`, and have a
-separate process which implements a socket server which reads from the socket
-and logs to file. (If you prefer, you can dedicate one thread in one of the
-existing processes to perform this function.)
-:ref:`This section <network-logging>` documents this approach in more detail and
-includes a working socket receiver which can be used as a starting point for you
-to adapt in your own applications.
+로깅은 스레드-안정성을 가지고 단일 프로세스상의 멀티 스레드로부터 하나의 파일로 로깅도 지원하지만
+여러 프로세스에서 하나의 파일로의 로깅하는 것은 지원하지 않는다.
+파이썬에서는 여러 프로세스로부터 하나의 파일로의 접근을
+직렬화 하는데 기준이 되는 방법이 없기 때문이다.
+한가지 방법은 모든 프로세스 로그를
+:class:`~handlers.SocketHandler`\ 에 두고 별도의 프로세스로 소켓을 읽고 파일에 로그를 쓰는 소켓 서버를 구현하는 것이다.
+(원한다면 하나의 스레드를 하나의 기존 프로세스에 두어 이 함수를 수행하게 할 수 있다.)
+:ref:`이 섹션 <network-logging>`\ 이 관련 접근법을 자세히 다루고 있으며
+어플리케이션 제작시 참조용으로 사용될 수 있는 소켓 리시버 코드도 포함한다.
 
-If you are using a recent version of Python which includes the
-:mod:`multiprocessing` module, you could write your own handler which uses the
-:class:`~multiprocessing.Lock` class from this module to serialize access to the
-file from your processes. The existing :class:`FileHandler` and subclasses do
-not make use of :mod:`multiprocessing` at present, though they may do so in the
-future. Note that at present, the :mod:`multiprocessing` module does not provide
-working lock functionality on all platforms (see
-https://bugs.python.org/issue3770).
+:mod:`multiprocessing` 모듈을 포함하는 최신 파이썬을 사용하고 있다면 이 모듈로부터
+:class:`~multiprocessing.Lock`\ 를 사용해
+프로세스로부터 파일로의 접근을 직렬화하는 핸들러를 직접 만들 수 있다.
+기존 :class:`FileHandler`\ 와 하위 클래스는 현재 :mod:`multiprocessing`\ 을 사용하지 않지만
+이후에는 지원할 수도 있다.
+현재 :mod:`multiprocessing` 모듈은 모든 플랫폼에서 잠금 기능을 제공하지 않는다는 것을 알아두자.
+(https://bugs.python.org/issue3770 참고).
 
 .. currentmodule:: logging.handlers
 
-Alternatively, you can use a ``Queue`` and a :class:`QueueHandler` to send
-all logging events to one of the processes in your multi-process application.
-The following example script demonstrates how you can do this; in the example
-a separate listener process listens for events sent by other processes and logs
-them according to its own logging configuration. Although the example only
-demonstrates one way of doing it (for example, you may want to use a listener
-thread rather than a separate listener process -- the implementation would be
-analogous) it does allow for completely different logging configurations for
-the listener and the other processes in your application, and can be used as
-the basis for code meeting your own specific requirements::
+대안으로 ``Queue``\ 와 :class:`QueueHandler`\ 를 사용해 멀티 프로세스 어플리케이션의
+프로세스 중 한 곳으로 모든 로깅 이벤트를 보낼 수 있다. 다음은 이를 구현하기 위한 예시 스크립트다.
+예로 든 개별 리스너 프로세스는 다른 프로세스가 보낸 이벤트를 듣고
+리스너 프로세스의 로깅 설정에 따라 로그를 기록한다.
+예시에서는 한가지 방법만을 설명하지만
+리스너 프로세스와 다른 어플리케이션의 프로세스를 위한 완전히 다른 리스너 로깅 설정도 가능하다.
+(예를 들어, 개별 리스너 프로세스 대신 리스너 스레드를 사용하길 원할 수 있다. 구현 방법은 비슷하다.)
+예시 스크립트는 사용자의 특정 요구 사항을 만족하는 코드를 위한 기초 코드로 사용될 수 있다. ::
 
     # You'll need these imports in your own code
     import logging
@@ -836,8 +794,7 @@ the basis for code meeting your own specific requirements::
     if __name__ == '__main__':
         main()
 
-A variant of the above script keeps the logging in the main process, in a
-separate thread::
+다음 코드에서는 위 스크립트를 변형하여 메인 프로세스의 로깅을 별도의 스레드에 보관한다. ::
 
     import logging
     import logging.config
@@ -931,23 +888,22 @@ separate thread::
         q.put(None)
         lp.join()
 
-This variant shows how you can e.g. apply configuration for particular loggers
-- e.g. the ``foo`` logger has a special handler which stores all events in the
-``foo`` subsystem in a file ``mplog-foo.log``. This will be used by the logging
-machinery in the main process (even though the logging events are generated in
-the worker processes) to direct the messages to the appropriate destinations.
+변형된 스크립트에서 특정 로거에 설정을 적용하는 방법을 볼 수 있다.
+예를 들어 ``foo`` 로거는 ``foo`` 하위 시스템의 모든 이벤트를
+``mplog-foo.log`` 파일에 저장하는 특별한 핸들러를 가지고 있다.
+이는 메인 프로세스의 장치 로깅에 사용되며
+로깅 이벤트가 작업 프로세스에 의해 생성되었더라도 적절한 목적지에 메세지를 보낸다.
 
-Using file rotation
+파일 로테이션 사용
 -------------------
 
 .. sectionauthor:: Doug Hellmann, Vinay Sajip (changes)
 .. (see <https://pymotw.com/3/logging/>)
 
-Sometimes you want to let a log file grow to a certain size, then open a new
-file and log to that. You may want to keep a certain number of these files, and
-when that many files have been created, rotate the files so that the number of
-files and the size of the files both remain bounded. For this usage pattern, the
-logging package provides a :class:`~handlers.RotatingFileHandler`::
+로그 파일이 특정 크기가 되면 새 파일을 열어 그 곳에 로그를 저장해야 할 수 있다.
+로그 파일이 계속 생성되어 특정 갯수가 되면
+파일을 순환해 로그 파일의 수와 크기에 제한을 두길 원할 수도 있다.
+이런 사용 방식을 위해 로깅 패키지는 :class:`~handlers.RotatingFileHandler`\ 를 제공한다. ::
 
    import glob
    import logging
@@ -975,8 +931,7 @@ logging package provides a :class:`~handlers.RotatingFileHandler`::
    for filename in logfiles:
        print(filename)
 
-The result should be 6 separate files, each with part of the log history for the
-application::
+결과는 다음과 같이 어플리케이션의 로그 기록이 담긴 여섯개의 개별 파일이 되어야 한다. ::
 
    logging_rotatingfile_example.out
    logging_rotatingfile_example.out.1
@@ -985,34 +940,28 @@ application::
    logging_rotatingfile_example.out.4
    logging_rotatingfile_example.out.5
 
-The most current file is always :file:`logging_rotatingfile_example.out`,
-and each time it reaches the size limit it is renamed with the suffix
-``.1``. Each of the existing backup files is renamed to increment the suffix
-(``.1`` becomes ``.2``, etc.)  and the ``.6`` file is erased.
+가장 최신 기록이 담긴 파일은 :file:`logging_rotatingfile_example.out`\ 이 되고
+파일이 크기 제한에 도달하면 파일명 끝에 ``.1``\ 이 붙는다. ``.1``\ 이 다음에는 ``.2``\ 이 되는 것과 같이
+기존 백업 파일은 끝의 숫자가 커지는 방식으로 이름이 바뀌고 ``.6`` 이후 파일은 삭제된다.
 
-Obviously this example sets the log length much too small as an extreme
-example.  You would want to set *maxBytes* to an appropriate value.
+이 예시의 로그 길이 제한은 매우 짧다. *maxBytes*로 적절한 값을 설정할 수 있다.
 
 .. _format-styles:
 
-Use of alternative formatting styles
+대체 포맷 스타일 사용
 ------------------------------------
 
-When logging was added to the Python standard library, the only way of
-formatting messages with variable content was to use the %-formatting
-method. Since then, Python has gained two new formatting approaches:
-:class:`string.Template` (added in Python 2.4) and :meth:`str.format`
-(added in Python 2.6).
+로깅 기능이 최초로 파이썬 표준 라이브러리에 추가되었을 때는 변수 내용과 함께 메세지를 포매팅하려면
+%-포매팅 메서드를 사용해야 했다.
+이후로 파이썬에 포매팅을 위한 두가지 방법이 추가되었는데
+:class:`string.Template` (파이썬 2.4)와 :meth:`str.format` (파이썬 2.6)이다.
 
-Logging (as of 3.2) provides improved support for these two additional
-formatting styles. The :class:`Formatter` class been enhanced to take an
-additional, optional keyword parameter named ``style``. This defaults to
-``'%'``, but other possible values are ``'{'`` and ``'$'``, which correspond
-to the other two formatting styles. Backwards compatibility is maintained by
-default (as you would expect), but by explicitly specifying a style parameter,
-you get the ability to specify format strings which work with
-:meth:`str.format` or :class:`string.Template`. Here's an example console
-session to show the possibilities:
+파이썬 3.2 이후로 로깅은 두가지 추가 포매팅 스타일의 지원을 강화했다.
+:class:`Formatter` 클래스는 ``style``\ 이라는 추가, 선택 키워드 매개변수를 받도록 개선됐다.
+기본은 ``'%'``\ 지만 다른 두가지 포매팅 스타일에 대응되는 ``'{'``\ 와 ``'$'`` 값도 가능하다.
+기본으로 하위 호환이 지원되지만 명시적으로 스타일 매개 변수를 지정해 :meth:`str.format`\ 나
+:class:`string.Template`\ 를 위한 포맷 문자열을 지정할 수 있다.
+다음은 가능한 여러 예시를 보여주는 콘솔 세션이다.
 
 .. code-block:: pycon
 
@@ -1038,32 +987,28 @@ session to show the possibilities:
     2010-10-28 15:13:11,494 foo.bar CRITICAL This is a CRITICAL message
     >>>
 
-Note that the formatting of logging messages for final output to logs is
-completely independent of how an individual logging message is constructed.
-That can still use %-formatting, as shown here::
+최종 출력용 로깅 메세지의 포매팅은 개별적인 로깅 메세지가 구성되는 방식과는 완전히 독립적이다.
+다음처럼 개별 로깅 메세지는 %-포매팅을 사용할 수 있다. ::
 
     >>> logger.error('This is an%s %s %s', 'other,', 'ERROR,', 'message')
     2010-10-28 15:19:29,833 foo.bar ERROR This is another, ERROR, message
     >>>
 
-Logging calls (``logger.debug()``, ``logger.info()`` etc.) only take
-positional parameters for the actual logging message itself, with keyword
-parameters used only for determining options for how to handle the actual
-logging call (e.g. the ``exc_info`` keyword parameter to indicate that
-traceback information should be logged, or the ``extra`` keyword parameter
-to indicate additional contextual information to be added to the log). So
-you cannot directly make logging calls using :meth:`str.format` or
-:class:`string.Template` syntax, because internally the logging package
-uses %-formatting to merge the format string and the variable arguments.
-There would be no changing this while preserving backward compatibility, since
-all logging calls which are out there in existing code will be using %-format
-strings.
+``logger.debug()``, ``logger.info()`` 등의 로깅 호출은
+실제 로깅 메세지 자체를 위한 위치 매개 변수만을 받는다.
+키워드 매개 변수는 실제 로깅 호출을 처리하는 방법을 위한 옵션을 결정할 때만 사용된다.
+(예시: 역추적 정보가 로그되어야 함을 나타내는 키워드 매개 변수 ``exc_info``\ 와
+추가 컨텍스트 정보가 로그의 추가됨을 나타내는 ``extra`` 키워드 매개 변수)
+:meth:`str.format` \ 이나 :class:`string.Template` 문법을 사용해 로깅 호출을 바로 만들 수는 없다.
+내부적으로 로깅 패키지는 %-포매팅을 사용해 포맷 문자열과 변수 인수를 합치기 때문이다.
+기존 코드에 있는 모든 로깅 호출이 %-포맷 문자열을 사용하기 때문에
+하위 호환성 유지를 위해 이를 바꾸지 않을 것이다.
 
-There is, however, a way that you can use {}- and $- formatting to construct
-your individual log messages. Recall that for a message you can use an
-arbitrary object as a message format string, and that the logging package will
-call ``str()`` on that object to get the actual format string. Consider the
-following two classes::
+그러나 {}- 포매팅과 $- 포매팅을 사용해 개별 로그 메세지를 구성할 수 있다.
+메세지에 임의의 객체를 메세지 포맷 문자열로 사용할 수 있고
+로깅 패키지는 그 객체에서 ``str()``\ 을 호출해
+실제 포맷 문자열을 얻는다는 것을 기억한다.
+다음 두 클래스를 생각해보자. ::
 
     class BraceMessage:
         def __init__(self, fmt, *args, **kwargs):
@@ -1083,17 +1028,15 @@ following two classes::
             from string import Template
             return Template(self.fmt).substitute(**self.kwargs)
 
-Either of these can be used in place of a format string, to allow {}- or
-$-formatting to be used to build the actual "message" part which appears in the
-formatted log output in place of "%(message)s" or "{message}" or "$message".
-It's a little unwieldy to use the class names whenever you want to log
-something, but it's quite palatable if you use an alias such as __ (double
-underscore --- not to be confused with _, the single underscore used as a
-synonym/alias for :func:`gettext.gettext` or its brethren).
+두 클래스를 포맷 문자열 자리에 사용해 {}-포매팅 또는 $-포매팅을 허용하면
+"%(메세지)", "{메세지}", "$메세지" 자리에 포맷화된 로그 출력으로 나타날 실제 "메세지"를 생성할 수 있다.
+무언가 로그할 때마다 클래스 네임을 사용하는 것은 번거롭지만
+더블 언더스코어(__)와 같은 별칭을 사용하면 더 간단하게 할 수 있다.
+더블 언더스코어(__)는 :func:`gettext.gettext`\ 의 별칭으로 사용되는 언더스코어(_)와
+혼동되지 않기 위해 사용한다.
 
-The above classes are not included in Python, though they're easy enough to
-copy and paste into your own code. They can be used as follows (assuming that
-they're declared in a module called ``wherever``):
+위의 클래스들은 파이썬에 포함되어 있지 않지만 코드에 복사해 가져오기 쉽다.
+다음과 같이 사용될 수 있다.(``wherever`` 모듈 안에 호출된다고 가정한다.
 
 .. code-block:: pycon
 
@@ -1113,20 +1056,15 @@ they're declared in a module called ``wherever``):
     Message with 2 placeholders
     >>>
 
-While the above examples use ``print()`` to show how the formatting works, you
-would of course use ``logger.debug()`` or similar to actually log using this
-approach.
+위의 예시는 포매팅 작동 방식을 보여주기 위해 ``print()``\ 를 사용하지만
+``logger.debug()``\ 나 유사한 것을 사용해 실제로 로그를 할 수 있다.
 
-One thing to note is that you pay no significant performance penalty with this
-approach: the actual formatting happens not when you make the logging call, but
-when (and if) the logged message is actually about to be output to a log by a
-handler. So the only slightly unusual thing which might trip you up is that the
-parentheses go around the format string and the arguments, not just the format
-string. That's because the __ notation is just syntax sugar for a constructor
-call to one of the XXXMessage classes.
+이 예시에서 알아야 할 것은 이러한 접근법으로 인한 심각한 성능 저하가 없다는 것이다.
+실제 포매팅은 로깅 호출을 생성할 때가 아니라 로그된 메세지가 핸들러로 출력되려할 때 이루어진다.
+실수를 할 수 있는 특이한 부분은 포맷 문자열이 아니라 포맷 문자열과 인수를 둘러싸는 괄호다.
+더블 언더스코어(__) 표기법은 XXXMessage 클래스 중 하나로의 생성자 호출을 위한 문법 첨가물일 뿐이기 때문이다.
 
-If you prefer, you can use a :class:`LoggerAdapter` to achieve a similar effect
-to the above, as in the following example::
+원한다면 :class:`LoggerAdapter`\ 를 사용해 위 예시와 같은 효과를 볼 수 있다. 다음 예시를 참고한다. ::
 
     import logging
 
@@ -1156,72 +1094,59 @@ to the above, as in the following example::
         logging.basicConfig(level=logging.DEBUG)
         main()
 
-The above script should log the message ``Hello, world!`` when run with
-Python 3.2 or later.
+파이썬 3.2 이후 버전에서 위의 스크립트는 ``Hello, world!`` 메세지를 출력해야 한다.
 
 
 .. currentmodule:: logging
 
 .. _custom-logrecord:
 
-Customizing ``LogRecord``
--------------------------
+``LogRecord`` 커스터마이징
+---------------------------------------
 
-Every logging event is represented by a :class:`LogRecord` instance.
-When an event is logged and not filtered out by a logger's level, a
-:class:`LogRecord` is created, populated with information about the event and
-then passed to the handlers for that logger (and its ancestors, up to and
-including the logger where further propagation up the hierarchy is disabled).
-Before Python 3.2, there were only two places where this creation was done:
+모든 로그 이벤트는 :class:`LogRecord` 인스턴스로 나타난다.
+이벤트가 로그되고 로거의 레벨에 의해 필터링되지 않았다면
+:class:`LogRecord`\ 가 생성되고
+이벤트에 대한 정보가 채워진 후
+그 로거(그리고 전파 비활성화된 로거를 만날 때까지 그 조상 로거) 핸들러로 보내진다.
+파이썬 3.2 이전에는 :class:`LogRecord` 생성이 두 곳에서 일어났다.
 
-* :meth:`Logger.makeRecord`, which is called in the normal process of
-  logging an event. This invoked :class:`LogRecord` directly to create an
-  instance.
-* :func:`makeLogRecord`, which is called with a dictionary containing
-  attributes to be added to the LogRecord. This is typically invoked when a
-  suitable dictionary has been received over the network (e.g. in pickle form
-  via a :class:`~handlers.SocketHandler`, or in JSON form via an
-  :class:`~handlers.HTTPHandler`).
+* :meth:`Logger.makeRecord` 메서드는 이벤트를 로깅하는 일반 프로세스에서 호출된다.
+  인스턴스 생성을 위해 :class:`LogRecord`\ 를 직접 호출한다.
+* :func:`makeLogRecord`\ 는 LogRecord에 추가될 속성을 담고 있는 딕셔너리와 함께 호출된다.
+  이 메서드는 보통 적절한 딕셔너리가 네트워크를 통해 수신됐을 때 호출된다.
+  (:class:`~handlers.SocketHandler`\ 를 통한 피클 형태 또는
+  :class:`~handlers.HTTPHandler`\ 를 통한 JSON 형태)
 
-This has usually meant that if you need to do anything special with a
-:class:`LogRecord`, you've had to do one of the following.
+이는 :class:`LogRecord`\ 로 특별한 일을 해야할 때는 다음 중 하나를 해야한다는 의미다.
 
-* Create your own :class:`Logger` subclass, which overrides
-  :meth:`Logger.makeRecord`, and set it using :func:`~logging.setLoggerClass`
-  before any loggers that you care about are instantiated.
-* Add a :class:`Filter` to a logger or handler, which does the
-  necessary special manipulation you need when its
-  :meth:`~Filter.filter` method is called.
+* :meth:`Logger.makeRecord`\ 를 오버라이딩하는 사용자만의 :class:`Logger` 서브 클래스를 만든다.
+  관련된 로거가 인스턴스되기 전에 :func:`~logging.setLoggerClass`\ 를 사용해 서브 클래스를 설정한다.
+* 로거나 핸들러에 :class:`Filter`\ 를 추가한다.
+  추가된 필터는 필터의 :meth:`~Filter.filter` 메서드가 호출되었을 때 사용자가 원하는 특정 변환을 한다.
 
-The first approach would be a little unwieldy in the scenario where (say)
-several different libraries wanted to do different things. Each would attempt
-to set its own :class:`Logger` subclass, and the one which did this last would
-win.
+첫번째 접근법은 여러개의 라이브러리가 다른 일을 하길 원하는 시나리오에서 번거로울 수 있다.
+각 라이브러리가 자신의 :class:`Logger` 서브 클래스를 설정하려 하고 가장 마지막에 설정한 것으로 된다.
 
-The second approach works reasonably well for many cases, but does not allow
-you to e.g. use a specialized subclass of :class:`LogRecord`. Library
-developers can set a suitable filter on their loggers, but they would have to
-remember to do this every time they introduced a new logger (which they would
-do simply by adding new packages or modules and doing ::
+두번째 접근법은 많은 경우에 잘 작동하지만 특별히 설정된 :class:`LogRecord` 서브 클래스를 사용할 수 없다.
+라이브러리 개발자는 적절한 필터를 로거에 넣을 수 있지만 새 로거를 소개할 때마다 이 작업을 하도록 기억해야 한다.
+다음과 같이 모듈 레벨에서 새 패키지나 모듈을 추가한다.::
 
    logger = logging.getLogger(__name__)
 
-at module level). It's probably one too many things to think about. Developers
-could also add the filter to a :class:`~logging.NullHandler` attached to their
-top-level logger, but this would not be invoked if an application developer
-attached a handler to a lower-level library logger --- so output from that
-handler would not reflect the intentions of the library developer.
+이 방법은 고려할 사항이 너무 많다.
+개발자는 최상위 로거의 추가된 :class:`~logging.NullHandler`\ 에
+필터를 추가할 수 있지만
+어플리케이션 개발자가 더 낮은 레벨의 라이브러리 로거에 핸들러를 추가하면 호출되지 않을 수 있다.
+따라서 그 핸들러로부터의 출력은 라이브러리 개발자의 의도를 반영하지 않을 수 있다.
 
-In Python 3.2 and later, :class:`~logging.LogRecord` creation is done through a
-factory, which you can specify. The factory is just a callable you can set with
-:func:`~logging.setLogRecordFactory`, and interrogate with
-:func:`~logging.getLogRecordFactory`. The factory is invoked with the same
-signature as the :class:`~logging.LogRecord` constructor, as :class:`LogRecord`
-is the default setting for the factory.
+파이썬 3.2 이후에서 :class:`~logging.LogRecord`\ 는 사용자가 지정할 수 있는 팩토리를 통해 생성된다.
+팩토리는 :func:`~logging.setLogRecordFactory`\ 로 설정할 수 있으며 호출가능하고 :func:`~logging.getLogRecordFactory`\ 로
+팩토리 정보를 얻을 수 있다. 팩토리는 :class:`LogRecord`\ 가 기본 설정이라는 점에서
+:class:`~logging.LogRecord` 생성자와 같이 호출된다.
 
-This approach allows a custom factory to control all aspects of LogRecord
-creation. For example, you could return a subclass, or just add some additional
-attributes to the record once created, using a pattern similar to this::
+이 방식은 사용자 지정 팩토리로 LogRecord 생성의 모든 요소를 제어할 수 있게 한다.
+예를 들어, 다음과 같은 패턴으로 서브 클래스를 반환하거나 생성된 레코드에 추가 인수를 추가할 수 있다. ::
 
     old_factory = logging.getLogRecordFactory()
 
@@ -1232,22 +1157,21 @@ attributes to the record once created, using a pattern similar to this::
 
     logging.setLogRecordFactory(record_factory)
 
-This pattern allows different libraries to chain factories together, and as
-long as they don't overwrite each other's attributes or unintentionally
-overwrite the attributes provided as standard, there should be no surprises.
-However, it should be borne in mind that each link in the chain adds run-time
-overhead to all logging operations, and the technique should only be used when
-the use of a :class:`Filter` does not provide the desired result.
+이 패턴으로 여러 라이브러리가 팩토리로 함께 묶일 수 있다.
+이를 통해 다른 라이브러리의 인수나 표준으로 부여된 인수를 덮어쓰지 않게 된다.
+그러나 함께 묶여있는 각 링크로 인해 모든 로깅 과정에 실행 시간 추가 비용이 발생하고
+이 기술은 :class:`Filter`\ 의 사용으로 원하는 결과를 얻을 수 없을 때만 사용되어야 함을 알고 있어야 한다.
 
 
 .. _zeromq-handlers:
 
-Subclassing QueueHandler - a ZeroMQ example
--------------------------------------------
+QueueHandler 서브클래싱 - ZeroMQ의 예
+-------------------------------------------------------------------
 
-You can use a :class:`QueueHandler` subclass to send messages to other kinds
-of queues, for example a ZeroMQ 'publish' socket. In the example below,the
-socket is created separately and passed to the handler (as its 'queue')::
+:class:`QueueHandler` 서브 클래스를 사용해 다른 종류의 큐로 메세지를 보낼 수 있다.
+설명에 사용되는 ZeroMQ 'publish' 소켓이다.
+다응 예시에서 소켓은 개별적으로 생성되고
+핸들러의 큐인 것처럼 핸들러로 보내진다. ::
 
     import zmq   # using pyzmq, the Python binding for ZeroMQ
     import json  # for serializing records portably
@@ -1264,8 +1188,7 @@ socket is created separately and passed to the handler (as its 'queue')::
     handler = ZeroMQSocketHandler(sock)
 
 
-Of course there are other ways of organizing this, for example passing in the
-data needed by the handler to create the socket::
+핸들러가 필요로 하는 데이터에 보내 소켓을 생성하는 것과 같이 다른 방법도 있다. ::
 
     class ZeroMQSocketHandler(QueueHandler):
         def __init__(self, uri, socktype=zmq.PUB, ctx=None):
@@ -1281,11 +1204,11 @@ data needed by the handler to create the socket::
             self.queue.close()
 
 
-Subclassing QueueListener - a ZeroMQ example
+QueueListener 서브클래싱 - ZeroMQ의 예
 --------------------------------------------
 
-You can also subclass :class:`QueueListener` to get messages from other kinds
-of queues, for example a ZeroMQ 'subscribe' socket. Here's an example::
+:class:`QueueListener` 서브 클래스를 사용해 다른 종류의 큐로부터 메세지를 받을 수도 있다.
+다음은 ZeroMQ 'subscribe' 소켓과 관련된 예시다. ::
 
     class ZeroMQSocketListener(QueueListener):
         def __init__(self, uri, *handlers, **kwargs):
@@ -1302,26 +1225,25 @@ of queues, for example a ZeroMQ 'subscribe' socket. Here's an example::
 
 .. seealso::
 
-   Module :mod:`logging`
-      API reference for the logging module.
+   모듈 :mod:`logging`
+      로깅 모델을 위한 API 참조.
 
-   Module :mod:`logging.config`
-      Configuration API for the logging module.
+   모듈 :mod:`logging.config`
+      로깅 모듈을 위한 설정 API.
 
-   Module :mod:`logging.handlers`
-      Useful handlers included with the logging module.
+   모듈 :mod:`logging.handlers`
+      로깅 모듈에 포함된 유용한 핸들러.
 
-   :ref:`A basic logging tutorial <logging-basic-tutorial>`
+   :ref:`로깅 튜토리얼 <logging-basic-tutorial>`
 
-   :ref:`A more advanced logging tutorial <logging-advanced-tutorial>`
+   :ref:`고급 로깅 튜토리 <logging-advanced-tutorial>`
 
 
-An example dictionary-based configuration
+딕셔너리 기반 설정 예시
 -----------------------------------------
 
-Below is an example of a logging configuration dictionary - it's taken from
-the `documentation on the Django project <https://docs.djangoproject.com/en/1.9/topics/logging/#configuring-logging>`_.
-This dictionary is passed to :func:`~config.dictConfig` to put the configuration into effect::
+다음은 `장고(Django) 프로젝트 문서 <https://docs.djangoproject.com/en/1.9/topics/logging/#configuring-logging>`_\
+에서 가져온 로깅 설정 딕셔너리 예시다. 이 딕셔너리는 :func:`~config.dictConfig`\ 로 보내지고 설정이 적용된다. ::
 
     LOGGING = {
         'version': 1,
@@ -1375,17 +1297,16 @@ This dictionary is passed to :func:`~config.dictConfig` to put the configuration
         }
     }
 
-For more information about this configuration, you can see the `relevant
-section <https://docs.djangoproject.com/en/1.9/topics/logging/#configuring-logging>`_
-of the Django documentation.
+위 설정과 관련된 자세한 정보는 장고 문서의
+`관련 섹션 <https://docs.djangoproject.com/en/1.9/topics/logging/#configuring-logging>`_\ 에서
+볼 수 있다.
 
 .. _cookbook-rotator-namer:
 
-Using a rotator and namer to customize log rotation processing
---------------------------------------------------------------
+로그 ratator와 namer를 사용한 로그 순환 프로세싱 커스터마이징
+------------------------------------------------------------------------------------------------
 
-An example of how you can define a namer and rotator is given in the following
-snippet, which shows zlib-based compression of the log file::
+다음 코드는 namer와 rotator 설정 예시다. 로그 파일의 zlip 기반 압축을 보여준다. ::
 
     def namer(name):
         return name + ".gz"
@@ -1402,30 +1323,24 @@ snippet, which shows zlib-based compression of the log file::
     rh.rotator = rotator
     rh.namer = namer
 
-These are not "true" .gz files, as they are bare compressed data, with no
-"container" such as you’d find in an actual gzip file. This snippet is just
-for illustration purposes.
+이 파일들은 텅빈 압축 데이터로 실제 gzip 파일에서 볼 수 있는 컨테이너가 없기 때문에 진짜 .gz 파일이 아니다.
+위 코드는 설명을 위한 예시일 뿐이다.
 
-A more elaborate multiprocessing example
+더 정교한 멀티 프로세싱 예시
 ----------------------------------------
 
-The following working example shows how logging can be used with multiprocessing
-using configuration files. The configurations are fairly simple, but serve to
-illustrate how more complex ones could be implemented in a real multiprocessing
-scenario.
+다음 예시는 설정 파일을 사용하는 멀티 프로세싱에 로깅이 어떻게 사용될 수 있는지 보여준다.
+간단한 설정이지만 실제 멀티프로세싱 시나리오에서 더 복잡한 설정이 어떻게 구현될 수 있는지 설명한다.
 
-In the example, the main process spawns a listener process and some worker
-processes. Each of the main process, the listener and the workers have three
-separate configurations (the workers all share the same configuration). We can
-see logging in the main process, how the workers log to a QueueHandler and how
-the listener implements a QueueListener and a more complex logging
-configuration, and arranges to dispatch events received via the queue to the
-handlers specified in the configuration. Note that these configurations are
-purely illustrative, but you should be able to adapt this example to your own
-scenario.
+예시에서 메인 프로세스는 리스너 프로세스와 몇몇 작업 프로세스를 생성한다.
+각 메인 프로세스, 리스너 프로세스, 작업 프로세스는 구별되는 세개의 설정을 갖는다.
+(작업 프로세스는 모두 같은 설정을 공유한다.)
+우리는 메인 프로세스의 로깅에서 작업 프로세스가 어떻게 QueueHandler로 로그하는지와
+리스너 프로세스가 어떻게 QueueListener와 더 복잡한 로깅 설정을 구현하고
+큐를 통해 받은 이벤트를 설정에 지정된 핸들러로 보내기 위해 정렬하는지 볼 수 있다.
+이 설정들은 설명만을 위한 것이지만 이 예시를 사용자의 시나리오에 적용할 수 있어야 한다.
 
-Here's the script - the docstrings and the comments hopefully explain how it
-works::
+다음은 예시 스크립트다. 독스트링과 코멘트가 작동 방식을 설명한다. ::
 
     import logging
     import logging.config
@@ -1635,60 +1550,46 @@ works::
         main()
 
 
-Inserting a BOM into messages sent to a SysLogHandler
+SysLogHandler에 보내지는 메세지에 BOM 삽입하기
 -----------------------------------------------------
 
-`RFC 5424 <https://tools.ietf.org/html/rfc5424>`_ requires that a
-Unicode message be sent to a syslog daemon as a set of bytes which have the
-following structure: an optional pure-ASCII component, followed by a UTF-8 Byte
-Order Mark (BOM), followed by Unicode encoded using UTF-8. (See the `relevant
-section of the specification <https://tools.ietf.org/html/rfc5424#section-6>`_.)
+`RFC 5424 <https://tools.ietf.org/html/rfc5424>`_\ 는 syslog 데몬으로 보내지는
+유니코드 메세지는 다음 구조를 갖는 바이트 모음으로 보내지길 요구한다.
+선택적인 순수 ASCII 컴포넌트, UTF-8 BOM(바이트 순서 표식), UTF-8로 인코딩된 유니코드.
+(`관련 섹션 <https://tools.ietf.org/html/rfc5424#section-6>`_\ 을 참고한다.)
 
-In Python 3.1, code was added to
-:class:`~logging.handlers.SysLogHandler` to insert a BOM into the message, but
-unfortunately, it was implemented incorrectly, with the BOM appearing at the
-beginning of the message and hence not allowing any pure-ASCII component to
-appear before it.
+파이썬 3.1에서 메세지에 BOM을 삽입하는 코드가 :class:`~logging.handlers.SysLogHandler`\ 에 추가되었다.
+하지만 잘못 구현되어 BOM이 메세지 시작 부분에 나타나고 앞에 순수 ASCII 컴포넌트가 올 수 있다.
 
-As this behaviour is broken, the incorrect BOM insertion code is being removed
-from Python 3.2.4 and later. However, it is not being replaced, and if you
-want to produce RFC 5424-compliant messages which include a BOM, an optional
-pure-ASCII sequence before it and arbitrary Unicode after it, encoded using
-UTF-8, then you need to do the following:
+파이썬 3.2.4 이후 버전에서는 잘못된 BOM 삽입 코드가 삭제되었지만 다른 코드로 대체되지 않았다.
+따라서 BOM 앞뒤로 각각 선택적 순수 ASCII 시퀀스와 임의의 UTF-8 인코딩 유니코드가 오는
 
-#. Attach a :class:`~logging.Formatter` instance to your
-   :class:`~logging.handlers.SysLogHandler` instance, with a format string
-   such as::
+#. 다음과 같은 포맷 문자열로 :class:`~logging.Formatter` 인스턴스를
+   사용자의 :class:`~logging.handlers.SysLogHandler` 인스턴스에 추가한다. ::
 
       'ASCII section\ufeffUnicode section'
 
-   The Unicode code point U+FEFF, when encoded using UTF-8, will be
-   encoded as a UTF-8 BOM -- the byte-string ``b'\xef\xbb\xbf'``.
+   유니코드 포인트 U+FEFF는 UTF-8로 인코딩할 때 UTF-8 BOM로 인코딩 되고 ``b'\xef\xbb\xbf'``\ 가 된다.
 
-#. Replace the ASCII section with whatever placeholders you like, but make sure
-   that the data that appears in there after substitution is always ASCII (that
-   way, it will remain unchanged after UTF-8 encoding).
+#. ASCII 섹션을 원하는 자리표시자로 대체하지만 대체 이후에 그 섹션에 나타나는 데이터는 항상 ASCII가 된다.
+   (이로 인해 UTF-8 인코딩 이후에도 변경되지 않고 남는다.)
 
-#. Replace the Unicode section with whatever placeholders you like; if the data
-   which appears there after substitution contains characters outside the ASCII
-   range, that's fine -- it will be encoded using UTF-8.
+#. 유니코드 섹션을 원하는 자리표시자로 대체한다. 대체 이후에 섹션에 나타나는 데이터가 ASCII 범위 바깥의 문자를
+   포함해도 UTF-8로 인코딩될 것이기 때문에 괜찮다.
 
-The formatted message *will* be encoded using UTF-8 encoding by
-``SysLogHandler``. If you follow the above rules, you should be able to produce
-RFC 5424-compliant messages. If you don't, logging may not complain, but your
-messages will not be RFC 5424-compliant, and your syslog daemon may complain.
+포맷화된 메세지는 ``SysLogHandler``\로 인코딩되며 UTF-8을 사용한다.
+위의 규칙을 지킨다면 RFC 5424를 준수하는 메세지를 생성할 수 있다.
+위배된 규칙이 있으면 로깅에서는 문제가 없이 지나가지만 메세지는 RFC 5424를 준수하지 않기 때문에 syslog 데몬에서 문제가 생길 수 있다.
 
 
-Implementing structured logging
+구조화된 로그 구현
 -------------------------------
 
-Although most logging messages are intended for reading by humans, and thus not
-readily machine-parseable, there might be circumstances where you want to output
-messages in a structured format which *is* capable of being parsed by a program
-(without needing complex regular expressions to parse the log message). This is
-straightforward to achieve using the logging package. There are a number of
-ways in which this could be achieved, but the following is a simple approach
-which uses JSON to serialise the event in a machine-parseable manner::
+대부분의 로깅 메세지는 사람이 읽기 위한 것이고 당연히 기계가 쉽게 파싱할 수 없다.
+하지만 프로그램으로 파싱할 수 있도록 구조화된 포맷의 출력 메세지가 필요한 상황이 올 수 있다.
+(복잡한 정규 표현식을 사용하지 않고 로그 메세지를 파싱할 수 있는 것이 좋다.)
+로깅 패키지를 사용하면 이러한 구조화 로그를 간단히 구현할 수 있다.
+다양한 방법이 있지만 다음 예시는 JSON을 사용해 이벤트를 기계가 파싱할 수 있게 나열하는 간단한 방법이다. ::
 
     import json
     import logging
@@ -1706,15 +1607,13 @@ which uses JSON to serialise the event in a machine-parseable manner::
     logging.basicConfig(level=logging.INFO, format='%(message)s')
     logging.info(_('message 1', foo='bar', bar='baz', num=123, fnum=123.456))
 
-If the above script is run, it prints::
+위 스크립트가 실행되면 다음과 같은 메세지가 나타난다. ::
 
     message 1 >>> {"fnum": 123.456, "num": 123, "bar": "baz", "foo": "bar"}
 
-Note that the order of items might be different according to the version of
-Python used.
+아이템의 나열 순서는 파이썬 버전에 따라 달라질 수 있다.
 
-If you need more specialised processing, you can use a custom JSON encoder,
-as in the following complete example::
+보다 특화된 처리를 원한다면 다음 예시와 같이 사용자 지정 JSON 인코더를 사용할 수 있다. ::
 
     from __future__ import unicode_literals
 
@@ -1753,27 +1652,25 @@ as in the following complete example::
     if __name__ == '__main__':
         main()
 
-When the above script is run, it prints::
+위 스크립트가 실행되면 다음과 같이 나타난다. ::
 
     message 1 >>> {"snowman": "\u2603", "set_value": [1, 2, 3]}
 
-Note that the order of items might be different according to the version of
-Python used.
+아이템의 나열 순서는 파이썬 버전에 따라 달라질 수 있다.
 
 
 .. _custom-handlers:
 
 .. currentmodule:: logging.config
 
-Customizing handlers with :func:`dictConfig`
+:func:`dictConfig` 함수로 핸들러 커스터마이징
 --------------------------------------------
 
-There are times when you want to customize logging handlers in particular ways,
-and if you use :func:`dictConfig` you may be able to do this without
-subclassing. As an example, consider that you may want to set the ownership of a
-log file. On POSIX, this is easily done using :func:`shutil.chown`, but the file
-handlers in the stdlib don't offer built-in support. You can customize handler
-creation using a plain function such as::
+특정한 방법으로 로깅 핸들러를 커스터마이징 하길 원할 때가 있다.
+:func:`dictConfig`\ 를 사용하면 서브 클래스화 없이 커스터마이징 할 수 있다.
+아래 예시처럼 로그 파일의 소유권을 설정하길 원하는 경우를 생각해보자.
+POSIX에서 :func:`shutil.chown`\ 를 사용해 손쉽게 할 수 있지만 stdlib의 파일 핸들러는 빌트인 지원을 제공하지 않는다.
+핸들러 생성을 다음과 같은 순수 함수로 커스터마이징할 수 있다. ::
 
     def owned_file_handler(filename, mode='a', encoding=None, owner=None):
         if owner:
@@ -1782,8 +1679,8 @@ creation using a plain function such as::
             shutil.chown(filename, *owner)
         return logging.FileHandler(filename, mode, encoding)
 
-You can then specify, in a logging configuration passed to :func:`dictConfig`,
-that a logging handler be created by calling this function::
+다음으로 :func:`dictConfig`\ 로 보내지는 로깅 설정에서
+로깅 핸들러가 이 함수를 호출함으로써 생성된다는 것을 명시할 수 있다. ::
 
     LOGGING = {
         'version': 1,
@@ -1815,9 +1712,8 @@ that a logging handler be created by calling this function::
         },
     }
 
-In this example I am setting the ownership using the ``pulse`` user and group,
-just for the purposes of illustration. Putting it together into a working
-script, ``chowntest.py``::
+이 예시는 단순히 설명 목적으로 ``pulse`` 사용자와 그룹을 사용한 소유권을 설정한다.
+위 함수와 설정을 작업 스크립트 ``chowntest.py``\ 에 합친다. ::
 
     import logging, logging.config, os, shutil
 
@@ -1862,7 +1758,7 @@ script, ``chowntest.py``::
     logger = logging.getLogger('mylogger')
     logger.debug('A debug message')
 
-To run this, you will probably need to run as ``root``:
+위 스크립트는 ``root`` 권한으로 실행해야 한다.
 
 .. code-block:: shell-session
 
@@ -1872,98 +1768,79 @@ To run this, you will probably need to run as ``root``:
     $ ls -l chowntest.log
     -rw-r--r-- 1 pulse pulse 55 2013-11-05 09:34 chowntest.log
 
-Note that this example uses Python 3.3 because that's where :func:`shutil.chown`
-makes an appearance. This approach should work with any Python version that
-supports :func:`dictConfig` - namely, Python 2.7, 3.2 or later. With pre-3.3
-versions, you would need to implement the actual ownership change using e.g.
-:func:`os.chown`.
+이 예시는 :func:`shutil.chown`\ 가 있는 파이썬 3.3을 사용함을 알아두자.
+따라서 :func:`dictConfig`\ 를 지원하는 파이썬 2.7, 파이썬 3.2 또는 이후 버전에서 사용해야 한다.
+파이썬 3.3 이전 버전에서는 소유권을 :func:`os.chown` 함수로 변경해야 한다.
 
-In practice, the handler-creating function may be in a utility module somewhere
-in your project. Instead of the line in the configuration::
+실제로 핸들러 생성 함수는 프로젝트 어딘가의 유틸리티 모듈에 있을 수 있다.
+다음 과 같은 설정 행 대신 ::
 
     '()': owned_file_handler,
 
-you could use e.g.::
+다음 예시와 같이 핸들러 생성 함수를 명시할 수 있다. ::
 
     '()': 'ext://project.util.owned_file_handler',
 
-where ``project.util`` can be replaced with the actual name of the package
-where the function resides. In the above working script, using
-``'ext://__main__.owned_file_handler'`` should work. Here, the actual callable
-is resolved by :func:`dictConfig` from the ``ext://`` specification.
+``project.util``\ 은 함수가 위치한 패키지 이름으로 대체할 수 있다.
+위의 작업 스크립트에서 ``'ext://__main__.owned_file_handler'``\ 로 명시해도 작동해야 한다.
+실제 호출가능 여부는 ``ext://`` 지정으로부터의 :func:`dictConfig` 함수로 해결되었다.
 
-This example hopefully also points the way to how you could implement other
-types of file change - e.g. setting specific POSIX permission bits - in the
-same way, using :func:`os.chmod`.
+이 예시는 다른 유형의 파일 수정을 구현하는 방법도 알려줄 수 있다.
+예를 들어, 특정 POSIX 권한 비트를 설정할 수 있다. 같은 방법에서 :func:`os.chmod` 함수를 사용한다.
 
-Of course, the approach could also be extended to types of handler other than a
-:class:`~logging.FileHandler` - for example, one of the rotating file handlers,
-or a different type of handler altogether.
+물론 이 접근법은 :class:`~logging.FileHandler`\ 가 아닌 다른 타입의 핸들러로 확장할 수 있다.
+예를 들어, 순환 파일 핸들러 중 하나나 다른 타입의 핸들러에 함게 사용할 때도 확장할 수 있다.
 
 
 .. currentmodule:: logging
 
 .. _formatting-styles:
 
-Using particular formatting styles throughout your application
+어플리케이션에서 특정 포매팅 스타일 사용하기
 --------------------------------------------------------------
 
-In Python 3.2, the :class:`~logging.Formatter` gained a ``style`` keyword
-parameter which, while defaulting to ``%`` for backward compatibility, allowed
-the specification of ``{`` or ``$`` to support the formatting approaches
-supported by :meth:`str.format` and :class:`string.Template`. Note that this
-governs the formatting of logging messages for final output to logs, and is
-completely orthogonal to how an individual logging message is constructed.
+파이썬 3,2에서 :class:`~logging.Formatter`\ 에 추가된 ``style`` 키워드 매개 변수로 하위 호환을 위한
+``%``를 기본으로 하면서 ``{``\ 나 ``$`` 설정을 허용해 :meth:`str.format`\ 와 :class:`string.Template`\ 이
+지원하는 포매팅 방식을 지원할 수 있다. 이 기능은 로그로의 최종 출력을 위한 로깅 메세지의 포매팅 만을 관리하고
+개별 로깅 메세지를 생성하는 방식과는 완전히 별개임을 알아두자.
 
-Logging calls (:meth:`~Logger.debug`, :meth:`~Logger.info` etc.) only take
-positional parameters for the actual logging message itself, with keyword
-parameters used only for determining options for how to handle the logging call
-(e.g. the ``exc_info`` keyword parameter to indicate that traceback information
-should be logged, or the ``extra`` keyword parameter to indicate additional
-contextual information to be added to the log). So you cannot directly make
-logging calls using :meth:`str.format` or :class:`string.Template` syntax,
-because internally the logging package uses %-formatting to merge the format
-string and the variable arguments. There would no changing this while preserving
-backward compatibility, since all logging calls which are out there in existing
-code will be using %-format strings.
+``logger.debug()``, ``logger.info()`` 등의 로깅 호출은 실제 로깅 메세지 자체를 위한 위치 매개 변수만을 받는다.
+키워드 매개 변수는 실제 로깅 호출을 처리하는 방법을 위한 옵션을 결정할 때만 사용된다.
+(예시: 역추적 정보가 로그되어야 함을 나타내는 키워드 매개 변수 ``exc_info``\ 와
+추가 컨텍스트 정보가 로그의 추가됨을 나타내는 ``extra`` 키워드 매개 변수)
+:meth:`str.format` \ 이나 :class:`string.Template` 문법을 사용해 로깅 호출을 바로 만들 수는 없다.
+내부적으로 로깅 패키지는 %-포매팅을 사용해 포맷 문자열과 변수 인수를 합치기 때문이다.
+기존 코드에 있는 모든 로깅 호출이 %-포맷 문자열을 사용하기 때문에 하위 호환성을 유지하면서 변화가 생기진 않을 것이다.
 
-There have been suggestions to associate format styles with specific loggers,
-but that approach also runs into backward compatibility problems because any
-existing code could be using a given logger name and using %-formatting.
+포맷 스타일을 특정 로거에 연결하기 위한 제안들은 있어왔지만 이러한 방법들은 하위 호환성 문제와 결부된다.
+기존 코드가 주어진 로거 이름과 %-포매팅을 사용하고 있을 수 있기 때문이다.
 
-For logging to work interoperably between any third-party libraries and your
-code, decisions about formatting need to be made at the level of the
-individual logging call. This opens up a couple of ways in which alternative
-formatting styles can be accommodated.
+서드 파티 라이브러리와 사용자의 코드를 상호 운용적으로 사용하도록 로깅하려면
+포매팅과 관련된 결정은 개별 로깅 호출의 레벨에서 정해져야 한다.
+이를 통해 대체 포매팅 스타일이 수용되는 방식에 대한 여러 방법들이 생긴다.
 
 
-Using LogRecord factories
+LogRecord 팩토리 사용하기
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In Python 3.2, along with the :class:`~logging.Formatter` changes mentioned
-above, the logging package gained the ability to allow users to set their own
-:class:`LogRecord` subclasses, using the :func:`setLogRecordFactory` function.
-You can use this to set your own subclass of :class:`LogRecord`, which does the
-Right Thing by overriding the :meth:`~LogRecord.getMessage` method. The base
-class implementation of this method is where the ``msg % args`` formatting
-happens, and where you can substitute your alternate formatting; however, you
-should be careful to support all formatting styles and allow %-formatting as
-the default, to ensure interoperability with other code. Care should also be
-taken to call ``str(self.msg)``, just as the base implementation does.
+앞서 다룬 :class:`~logging.Formatter` 변경과 함께 파이썬 3.2에서 로깅 패키지는 사용자가
+:func:`setLogRecordFactory`\ 함수를 사용해 자신의 :class:`LogRecord` 서브 클래스를 설정하는 것을 허용한다.
+이 함수를 사용해 사용자만의 :class:`LogRecord` 서브 클래스를 설정할 수 있다.
+이는 :meth:`~LogRecord.getMessage` 메서드를 덮어쓰는 것과 같은 일이다.
+이 메서드의 기본 클래스 구현은 ``msg % args`` 포매팅이 일어나는 곳과 대체 포매팅을 삽입할 수 있는 곳이다.
+그러나 모든 포매팅 스타일을 지원하고 %-포매팅을 기본으로 허용해 다른 코드와의 상호운용성을 보장하도록 주의한다.
+기본 구현과 마찬가지로 ``str(self.msg)`` 호출도 주의해야 한다.
 
-Refer to the reference documentation on :func:`setLogRecordFactory` and
-:class:`LogRecord` for more information.
+더 많은 정보는 :func:`setLogRecordFactory`\ 와 :class:`LogRecord`\ 를 참고한다.
 
 
-Using custom message objects
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+사용자 커스터마이징 메세지 객체 사용하기
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-There is another, perhaps simpler way that you can use {}- and $- formatting to
-construct your individual log messages. You may recall (from
-:ref:`arbitrary-object-messages`) that when logging you can use an arbitrary
-object as a message format string, and that the logging package will call
-:func:`str` on that object to get the actual format string. Consider the
-following two classes::
+{}-포매팅과 $-포매팅을 사용해 개별 로그 메세지를 구성하는 더 간단한 방법이 있다.
+:ref:`arbitrary-object-messages`\ 에서 로깅할 때 임의의 객체를 메세지 포맷 문자열로 사용할 수 있다는 것과
+로깅 패키지가 그 객체에 :func:`str`\ 을 호출해 실제 포맷 문자열을 가져온다는 것을 다룬 적이 있다.
+다음 두 클래스를 생각해보자. ::
 
     class BraceMessage(object):
         def __init__(self, fmt, *args, **kwargs):
@@ -1983,16 +1860,12 @@ following two classes::
             from string import Template
             return Template(self.fmt).substitute(**self.kwargs)
 
-Either of these can be used in place of a format string, to allow {}- or
-$-formatting to be used to build the actual "message" part which appears in the
-formatted log output in place of “%(message)s” or “{message}” or “$message”.
-If you find it a little unwieldy to use the class names whenever you want to log
-something, you can make it more palatable if you use an alias such as ``M`` or
-``_`` for the message (or perhaps ``__``, if you are using ``_`` for
-localization).
+두 클래스를 포맷 문자열 자리에 사용해 {}-포매팅 또는 $-포매팅을 허용하면
+"%(메세지)", "{메세지}", "$메세지" 자리에 포맷화된 로그 출력으로 나타날 실제 "메세지"를 생성할 수 있다.
+무언가 로그할 때마다 클래스 네임을 사용하는 것은 번거롭지만 메세지에 ``M`` 이나 ``_`` 와 같은 별칭을 사용하면 더 간단하게 할 수 있다.
+(지역화를 위해 ``_`` 를 사용하고 있다면 ``__``)
 
-Examples of this approach are given below. Firstly, formatting with
-:meth:`str.format`::
+다음은 이 방법과 관련된 예시다. 먼저 :meth:`str.format`\ 로 포매팅하다. ::
 
     >>> __ = BraceMessage
     >>> print(__('Message with {0} {1}', 2, 'placeholders'))
@@ -2005,39 +1878,34 @@ Examples of this approach are given below. Firstly, formatting with
     >>> print(__('Message with coordinates: ({point.x:.2f}, {point.y:.2f})', point=p))
     Message with coordinates: (0.50, 0.50)
 
-Secondly, formatting with :class:`string.Template`::
+다음으로 :class:`string.Template`\ 으로 포매팅한다. ::
 
     >>> __ = DollarMessage
     >>> print(__('Message with $num $what', num=2, what='placeholders'))
     Message with 2 placeholders
     >>>
 
-One thing to note is that you pay no significant performance penalty with this
-approach: the actual formatting happens not when you make the logging call, but
-when (and if) the logged message is actually about to be output to a log by a
-handler. So the only slightly unusual thing which might trip you up is that the
-parentheses go around the format string and the arguments, not just the format
-string. That’s because the __ notation is just syntax sugar for a constructor
-call to one of the ``XXXMessage`` classes shown above.
+이 예시에서 알아야 할 것은 예시의 접근법으로 인한 심각한 성능 패널티가 없다는 것이다.
+실제 포매팅은 로깅 호출을 생성할 때가 아니라 로그된 메세지가 핸들러로 로그로의 출력이 되려할 때 이루어진다.
+실수를 할 수 있는 특이한 부분은 포맷 문자열이 아니라 포맷 문자열과 인수를 둘러싸는 괄호다.
+더블 언더스코어(__) 표기법은 위 예시처럼 ``XXXMessage`` 클래스 중 하나로의 생성자 호출을 위한 문법 첨가물일 뿐이기 때문이다.
 
 
 .. _filters-dictconfig:
 
 .. currentmodule:: logging.config
 
-Configuring filters with :func:`dictConfig`
+:func:`dictConfig` 함수로 필터 설정
 -------------------------------------------
 
-You *can* configure filters using :func:`~logging.config.dictConfig`, though it
+처음에는 조금 난해한 방법으로 느껴질 수 있지만 :func:`~logging.config.dictConfig`\ 를 사용해 필터를 설정할 수 있다.
+, though it
 might not be obvious at first glance how to do it (hence this recipe). Since
-:class:`~logging.Filter` is the only filter class included in the standard
-library, and it is unlikely to cater to many requirements (it's only there as a
-base class), you will typically need to define your own :class:`~logging.Filter`
-subclass with an overridden :meth:`~logging.Filter.filter` method. To do this,
-specify the ``()`` key in the configuration dictionary for the filter,
-specifying a callable which will be used to create the filter (a class is the
-most obvious, but you can provide any callable which returns a
-:class:`~logging.Filter` instance). Here is a complete example::
+표준 라이브러리에 포함된 필터 클래스는 :class:`~logging.Filter`\ 뿐이고 많은 요구사항을 만족하기 어렵기 때문에
+보통은 사용자만의 :class:`~logging.Filter` 하위 클래스를 정의해 :meth:`~logging.Filter.filter` 메서드를 덮어써야 한다.
+이를 위해 필터 설정 딕셔너리에 ``()`` 키를 지정해 필터를 생성하는데 사용될 호출 가능 객체를 지정해야 한다.
+(클래스가 가장 알기 쉽지만 :class:`~logging.Filter` 인스턴스를 반환하는 어떤 호출 가능 객체도 가능하다.)
+다음은 완성된 예시다. ::
 
     import logging
     import logging.config
@@ -2081,38 +1949,32 @@ most obvious, but you can provide any callable which returns a
         logging.debug('hello')
         logging.debug('hello - noshow')
 
-This example shows how you can pass configuration data to the callable which
-constructs the instance, in the form of keyword parameters. When run, the above
-script will print::
+이 예시에서 인스턴스를 생성하는 호출 가능 객체로 키워드 매개 변수 형태의 설정 데이터를 보내는 방법을 볼 수 있다.
+실행도면 다음과 같이 나타난다. ::
 
     changed: hello
 
-which shows that the filter is working as configured.
+필터가 설정대로 작동하는 것을 볼 수 있다.
 
-A couple of extra points to note:
+다음은 알아야 할 추가 사항이다.
 
-* If you can't refer to the callable directly in the configuration (e.g. if it
-  lives in a different module, and you can't import it directly where the
-  configuration dictionary is), you can use the form ``ext://...`` as described
-  in :ref:`logging-config-dict-externalobj`. For example, you could have used
-  the text ``'ext://__main__.MyFilter'`` instead of ``MyFilter`` in the above
-  example.
+* 객체가 다른 모듈에 있어 설정 딕셔너리가 있는 곳에 바로 가져올 수 없을 때와 같이
+  설정에서 호출 가능 객체를 바로 참조할 수 없는 경우가 있다. 이 때는 :ref:`logging-config-dict-externalobj`\ 에서
+  설명하는대로 ``ext://...`` 형식을 사용할 수 있다. 예를 들어, 위 예시에서 ``MyFilter`` 대신
+  ``'ext://__main__.MyFilter'``\ 를 사용할 수 있다.
 
-* As well as for filters, this technique can also be used to configure custom
-  handlers and formatters. See :ref:`logging-config-dict-userdef` for more
-  information on how logging supports using user-defined objects in its
-  configuration, and see the other cookbook recipe :ref:`custom-handlers` above.
+* 핸들러와 포매터에서도 위 방법을 사용해 사용자 지정 핸들러와 포매터도 설정할 수 있다.
+  :ref:`logging-config-dict-userdef`\ 를 보면 로깅이 설정에서 사용자 지정 객체를 지원하는 방법을 볼 수 있다.
+  :ref:`custom-handlers` \ 도 참고한다.
 
 
 .. _custom-format-exception:
 
-Customized exception formatting
+예외 포매팅 커스터마이징
 -------------------------------
 
-There might be times when you want to do customized exception formatting - for
-argument's sake, let's say you want exactly one line per logged event, even
-when exception information is present. You can do this with a custom formatter
-class, as shown in the following example::
+예외 포매팅을 커스터마이징하길 원할 때가 있다. 인수를 위해 예외 정보가 있을 때도 로그 이벤트당 하나의 행을 원한다고 가정하자.
+다음 예시와 같이 사용자 지정 포매터 클래스로 할 수 있다. ::
 
     import logging
 
@@ -2150,32 +2012,26 @@ class, as shown in the following example::
     if __name__ == '__main__':
         main()
 
-When run, this produces a file with exactly two lines::
+위 스크립트를 실행하면 딱 두 행을 갖는 파일이 생성된다. ::
 
     28/01/2015 07:21:23|INFO|Sample message|
     28/01/2015 07:21:23|ERROR|ZeroDivisionError: integer division or modulo by zero|'Traceback (most recent call last):\n  File "logtest7.py", line 30, in main\n    x = 1 / 0\nZeroDivisionError: integer division or modulo by zero'|
 
-While the above treatment is simplistic, it points the way to how exception
-information can be formatted to your liking. The :mod:`traceback` module may be
-helpful for more specialized needs.
+위 방법은 간단하지만 사용자가 원하는 대로 예외 정보 포맷을 정하는 방법을 알려준다.
+더 특화된 목적에는 :mod:`traceback` 모듈이 도움이 될 것이다.
 
 .. _spoken-messages:
 
-Speaking logging messages
+로깅 메세지 말하기
 -------------------------
 
-There might be situations when it is desirable to have logging messages rendered
-in an audible rather than a visible format. This is easy to do if you have
-text-to-speech (TTS) functionality available in your system, even if it doesn't have
-a Python binding. Most TTS systems have a command line program you can run, and
-this can be invoked from a handler using :mod:`subprocess`. It's assumed here
-that TTS command line programs won't expect to interact with users or take a
-long time to complete, and that the frequency of logged messages will be not so
-high as to swamp the user with messages, and that it's acceptable to have the
-messages spoken one at a time rather than concurrently, The example implementation
-below waits for one message to be spoken before the next is processed, and this
-might cause other handlers to be kept waiting. Here is a short example showing
-the approach, which assumes that the ``espeak`` TTS package is available::
+로깅 메세지를 시각화보다 음성화하는 것이 더 좋은 상황이 있다.
+파이썬 바인딩이 아니더라도 시스템에서 텍스트 음성 변환 기능을 사용할 수 있다면 쉽게 할 수 있다.
+대부분의 텍스트 음성 변환 시스템은 명령줄 프로그램을 실행할 수 있고 이를 :mod:`subprocess` 핸들러로 호출할 수 있다.
+이 예시는 다음과 같은 가정을 한다. TTS의 명령줄 프로그램은 사용자와 상호 작용하거나 작업을 마치는데 오랜 시간이 걸리지 않는다.
+로그된 메세지의 빈도가 사용자가 메세지에 빠질 만큼 높지 않다. 메세지를 동시에 말하지 않고 하나씩 말해도 된다.
+아래 예시의 구현은 메세지가 말해지길 기다렸다가 다음 메세지를 처리한다. 이로 인해 다른 핸들러는 대기해야 할 수 있다.
+다음 짧은 예시는 ``espeak`` 텍스트 음성화 패키지를 사용 가능하다고 가정한 예시다. ::
 
     import logging
     import subprocess
@@ -2206,50 +2062,36 @@ the approach, which assumes that the ``espeak`` TTS package is available::
         configure_logging()
         sys.exit(main())
 
-When run, this script should say "Hello" and then "Goodbye" in a female voice.
+실행하면 위 스크립트는 여성 음성으로 "Hello"와 "Goodbye"를 순서대로 말한다.
 
-The above approach can, of course, be adapted to other TTS systems and even
-other systems altogether which can process messages via external programs run
-from a command line.
+위 방법을 다른 텍스트 음성 변환 시스템이나 아예 다른 시스템에 적용해 명령줄에서 실행되는 외부 프로그램으로 메세지를 처리할 수 있다.
 
 
 .. _buffered-logging:
 
-Buffering logging messages and outputting them conditionally
+상황에 따른 메세지 로깅과 출력 버퍼링
 ------------------------------------------------------------
 
-There might be situations where you want to log messages in a temporary area
-and only output them if a certain condition occurs. For example, you may want to
-start logging debug events in a function, and if the function completes without
-errors, you don't want to clutter the log with the collected debug information,
-but if there is an error, you want all the debug information to be output as well
-as the error.
+임시 영역에 로그 메세지를 두었다가 특정 상황에만 메세지를 출력해야 하는 경우가 있다.
+예를 들어, 함수에서 디버그 이벤트 로깅을 시작한다. 함수가 에러 없이 종료되면 수집된 디버그 정보로 로그를 어지럽히지 않는다.
+에러가 발생하면 모든 디버그 정보와 에러를 출력해야 한다.
 
-Here is an example which shows how you could do this using a decorator for your
-functions where you want logging to behave this way. It makes use of the
-:class:`logging.handlers.MemoryHandler`, which allows buffering of logged events
-until some condition occurs, at which point the buffered events are ``flushed``
-- passed to another handler (the ``target`` handler) for processing. By default,
-the ``MemoryHandler`` flushed when its buffer gets filled up or an event whose
-level is greater than or equal to a specified threshold is seen. You can use this
-recipe with a more specialised subclass of ``MemoryHandler`` if you want custom
-flushing behavior.
+다음 예시에서 함수에 데코레이터를 사용해 이와 같은 로깅을 하는 방법을 볼 수 있다.
+특정 상황이 발생할 때가지 로그 이벤트를 지연하는 :class:`logging.handlers.MemoryHandler`\ 를 사용한다.
+특정 상황이 발생하면 지연된 이벤트는 플러시되고 다른 핸들러(목표 핸들러)로 보내진다.
+기본으로 ``MemoryHandler``\ 는 버퍼가 차거나 지정된 임계점 이상의 이벤트가 나타나면 플러시된다.
+사용자 지정 플러시를 원한다면 이 방법을 사용해 더 특화된 ``MemoryHandler`` 서브 클래스를 만들 수 있다.
 
-The example script has a simple function, ``foo``, which just cycles through
-all the logging levels, writing to ``sys.stderr`` to say what level it's about
-to log at, and then actually logging a message at that level. You can pass a
-parameter to ``foo`` which, if true, will log at ERROR and CRITICAL levels -
-otherwise, it only logs at DEBUG, INFO and WARNING levels.
+예시 스크립트는 간단한 함수 ``foo``\ 를 가지고 있다. 이 함수는 모든 로깅 레벨을 돌아 ``sys.stderr``\ 에
+작성해 곧 로그할 레벨을 알려주고 그 레벨에 실제로 메세지를 로그한다. ``foo`` 에 매개 변수를 보낼 수 있고
+참이면 ERROR와 CRITICAL 레벨에 로그하고 아니면 DEBUG, INFO, WARNING 레벨에만 로그한다.
 
-The script just arranges to decorate ``foo`` with a decorator which will do the
-conditional logging that's required. The decorator takes a logger as a parameter
-and attaches a memory handler for the duration of the call to the decorated
-function. The decorator can be additionally parameterised using a target handler,
-a level at which flushing should occur, and a capacity for the buffer. These
-default to a :class:`~logging.StreamHandler` which writes to ``sys.stderr``,
-``logging.ERROR`` and ``100`` respectively.
+다음 스크립트는 필요한 조건부 로깅을 수행하는 데코레이터를 ``foo``\ 에 배열한다.
+데코레이터는 로거를 매개 변수처럼 받고 데코레이터를 사용한 함수로의 호출 지속 시간을 위한 메모리 핸들러를 추가한다.
+데코레이터는 타켓 핸들러, 플러시되어야 하는 레벨, 버퍼를 위한 기능을 사용해 추가적으로 매개 변수화 될 수 있다.
+``sys.stderr``, ``logging.ERROR``, ``100``\ 에 개별적으로 작성하는 :class:`~logging.StreamHandler`\ 가 기본 핸들러다.
 
-Here's the script::
+다음은 스크립트다. ::
 
     import logging
     from logging.handlers import MemoryHandler
@@ -2312,7 +2154,7 @@ Here's the script::
         write_line('Calling decorated foo with True')
         assert decorated_foo(True)
 
-When this script is run, the following output should be observed::
+위 스크립트를 실행하면 다음과 같은 출력을 볼 수 있다. ::
 
     Calling undecorated foo with False
     about to log at DEBUG ...
@@ -2340,11 +2182,10 @@ When this script is run, the following output should be observed::
     about to log at CRITICAL ...
     Actually logged at CRITICAL
 
-As you can see, actual logging output only occurs when an event is logged whose
-severity is ERROR or greater, but in that case, any previous events at lower
-severities are also logged.
+위 예시에서 볼 수 있듯이 실제 로깅 출력은 중요도가 ERROR 이상인 이벤트가 로그되었을 때만 나타난다.
+그러나 이 경우에 더 낮은 중요도를 갖는 이전 이벤트 또한 로그된다.
 
-You can of course use the conventional means of decoration::
+데코레이터의 일반적인 기능도 사용할 수 있다. ::
 
     @log_if_errors(logger)
     def foo(fail=False):
@@ -2353,11 +2194,10 @@ You can of course use the conventional means of decoration::
 
 .. _utc-formatting:
 
-Formatting times using UTC (GMT) via configuration
+설정을 통해 UTC (GMT)로 시간 포매팅하기
 --------------------------------------------------
 
-Sometimes you want to format times using UTC, which can be done using a class
-such as `UTCFormatter`, shown below::
+시간 UTC 포맷으로 해야하는 경우가 있다. 다음과 같이 `UTCFormatter` 클래스를 사용하면 된다. ::
 
     import logging
     import time
@@ -2365,10 +2205,8 @@ such as `UTCFormatter`, shown below::
     class UTCFormatter(logging.Formatter):
         converter = time.gmtime
 
-and you can then use the ``UTCFormatter`` in your code instead of
-:class:`~logging.Formatter`. If you want to do that via configuration, you can
-use the :func:`~logging.config.dictConfig` API with an approach illustrated by
-the following complete example::
+이제 코드에 :class:`~logging.Formatter` 클래스 대신 ``UTCFormatter``\ 를 사용할 수 있다.
+설정을 통해 UTC 포맷을 사용하고 싶다면 다음 예시처럼 :func:`~logging.config.dictConfig` API를 사용할 수 있다. ::
 
     import logging
     import logging.config
@@ -2408,26 +2246,22 @@ the following complete example::
         logging.config.dictConfig(LOGGING)
         logging.warning('The local time is %s', time.asctime())
 
-When this script is run, it should print something like::
+이 스크립트를 실행하면 다음과 같은 출력이 나타난다. ::
 
     2015-10-17 12:53:29,501 The local time is Sat Oct 17 13:53:29 2015
     2015-10-17 13:53:29,501 The local time is Sat Oct 17 13:53:29 2015
 
-showing how the time is formatted both as local time and UTC, one for each
-handler.
+핸들러 당 하나씩 현지 시간과 UTC 포맷 모두 나타나는 것을 볼 수 있다.
 
 
 .. _context-manager:
 
-Using a context manager for selective logging
+선택적 로깅을 위해 컨텍스트 매니저 사용하기
 ---------------------------------------------
 
-There are times when it would be useful to temporarily change the logging
-configuration and revert it back after doing something. For this, a context
-manager is the most obvious way of saving and restoring the logging context.
-Here is a simple example of such a context manager, which allows you to
-optionally change the logging level and add a logging handler purely in the
-scope of the context manager::
+로깅 설정을 잠시 바꾸었다가 어떤 작업을 하고 다시 되돌려 놓는 것이 유용할 때가 있다.
+이를 위해 로깅 컨텍스트를 저장해두었다가 다시 되돌리는 가장 확실한 방법은 컨텍스트 매니저다.
+다음은 컨텍스트 매니저의 간단한 예시로 로깅 레벨을 선택적으로 바꾸고 순수하게 컨텍스트 매니저의 범위에서 로깅 핸들러를 추가할 수 있다. ::
 
     import logging
     import sys
@@ -2455,14 +2289,11 @@ scope of the context manager::
                 self.handler.close()
             # implicit return of None => don't swallow exceptions
 
-If you specify a level value, the logger's level is set to that value in the
-scope of the with block covered by the context manager. If you specify a
-handler, it is added to the logger on entry to the block and removed on exit
-from the block. You can also ask the manager to close the handler for you on
-block exit - you could do this if you don't need the handler any more.
+레벨 값을 정의하면 로거의 레벨은 컨텍스트 매니저가 다루는 with 블럭의 범위 안의 값으로 설정된다.
+핸들러를 지정하면 블럭으로 들어올 때 로거에 추가되고 블럭으로부터 나올 때 삭제된다.
+블럭을 나올 때 핸들러를 닫도록 매니저에 요청할 수 있다. 핸들러가 더 필요하지 않다면 이렇게 해도 된다.
 
-To illustrate how it works, we can add the following block of code to the
-above::
+어떻게 작동하는지 설명하기 위해 다음 코드 블럭을 위 예시에 추가할 수 있다. ::
 
     if __name__ == '__main__':
         logger = logging.getLogger('foo')
@@ -2479,17 +2310,14 @@ above::
         logger.info('6. This should appear just once on stderr.')
         logger.debug('7. This should not appear.')
 
-We initially set the logger's level to ``INFO``, so message #1 appears and
-message #2 doesn't. We then change the level to ``DEBUG`` temporarily in the
-following ``with`` block, and so message #3 appears. After the block exits, the
-logger's level is restored to ``INFO`` and so message #4 doesn't appear. In the
-next ``with`` block, we set the level to ``DEBUG`` again but also add a handler
-writing to ``sys.stdout``. Thus, message #5 appears twice on the console (once
-via ``stderr`` and once via ``stdout``). After the ``with`` statement's
-completion, the status is as it was before so message #6 appears (like message
-#1) whereas message #7 doesn't (just like message #2).
+처음에 로거 레벨을 ``INFO``\ 로 설정했기 때문에 메세지 #1이 나타나고 메세지 #2는 나타나지 않는다.
+다음으로 따라오는 ``with`` 블럭에서 잠시 레벨을 ``DEBUG``\ 로 바꿨기 때문에 메세지 #3이 나타난다.
+블럭에서 나오면 로거의 레벨은 ``INFO``\ 되돌아가고 메세지 #4는 나타나지 않는다.
+다음 ``with`` 블럭에서 레벨을 다시 ``DEBUG``\ 로 설정했지만 ``sys.stdout``\ 로의 핸들러 작성을 추가했다.
+따라서 메세지 #5는 콘솔에 두번 나타난다.(``stderr``\ 를 통해 한번 ``stdout``\ 을 통해 한번)
+``with`` 선언이 끝나면 다시 이전 상태로 돌아가 메세지 #6은 나타나지만 메세지 #7은 나타나지 않는다.
 
-If we run the resulting script, the result is as follows:
+결과 스크립트를 실행하면 다음과 같이 나타난다.
 
 .. code-block:: shell-session
 
@@ -2500,15 +2328,14 @@ If we run the resulting script, the result is as follows:
     5. This should appear twice - once on stderr and once on stdout.
     6. This should appear just once on stderr.
 
-If we run it again, but pipe ``stderr`` to ``/dev/null``, we see the following,
-which is the only message written to ``stdout``:
+``stderr``\ 를 ``/dev/null``\ 로 보내고 다시 실행하면 다음과 같이 ``stdout``\ 에 작성된 메세지만이 나타난다.
 
 .. code-block:: shell-session
 
     $ python logctx.py 2>/dev/null
     5. This should appear twice - once on stderr and once on stdout.
 
-Once again, but piping ``stdout`` to ``/dev/null``, we get:
+``stdout``\ 를 ``/dev/null``\ 로 보내고 다시 실행하면 다음과 같이 나타난다.
 
 .. code-block:: shell-session
 
@@ -2518,8 +2345,7 @@ Once again, but piping ``stdout`` to ``/dev/null``, we get:
     5. This should appear twice - once on stderr and once on stdout.
     6. This should appear just once on stderr.
 
-In this case, the message #5 printed to ``stdout`` doesn't appear, as expected.
+이 예시에서 예상대로 ``stdout``\ 로 출력된 메세지 #5는 나타나지 않는다.
 
-Of course, the approach described here can be generalised, for example to attach
-logging filters temporarily. Note that the above code works in Python 2 as well
-as Python 3.
+여기서 설명하는 방법은 로깅 필터를 임시로 두기 위한 예시로서 일반화된 방법이다.
+위 코드는 파이썬2 와 파이썬 3에서 모두 작동한다는 것을 알아두자.
