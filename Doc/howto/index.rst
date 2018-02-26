@@ -18,7 +18,7 @@ Currently, the HOWTOs are:
    curses.rst
    descriptor.rst
    functional.rst
-   logging_ko.rst
+   logging.rst
    logging-cookbook.rst
    regex.rst
    sockets.rst

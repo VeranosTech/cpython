@@ -2,13 +2,11 @@
 파이썬 하우투(HOWTO)
 ******************************
 
-Python HOWTOs are documents that cover a single, specific topic,
-and attempt to cover it fairly completely. Modelled on the Linux
-Documentation Project's HOWTO collection, this collection is an
-effort to foster documentation that's more detailed than the
-Python Library Reference.
+파이썬 하우투(HOWTO)는 특정한 하나의 주제를 정해서 관련된 모든 것을 다루는 글이다.
+리눅스 문서화 프로젝트의 하우투 문서 모임을 본따서 만들어졌다.
+하우투 문서들은 파이썬 라이브러리 참조서보다 더 자세한 내용을 문서화하기 위한 노력의 일환이다.
 
-Currently, the HOWTOs are:
+현재 만들어진 하우투 문서는 다음과 같다.::
 
 .. toctree::
    :maxdepth: 1
