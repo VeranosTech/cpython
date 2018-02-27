@@ -11,19 +11,20 @@
 
 .. sidebar:: Important
 
-   이 페이지는 참조 정보만 포함한다. 튜토리얼 정보는 다음을 참조한다.
+   이 페이지는 API 참조 정보만 포함한다.
+   튜토리얼 정보와 더 고급 주제는 다음을 참조한다.
 
-   * :ref:`Basic Tutorial <logging-basic-tutorial>`
-   * :ref:`Advanced Tutorial <logging-advanced-tutorial>`
-   * :ref:`Logging Cookbook <logging-cookbook>`
+   * :ref:`기초 튜토리얼 <logging-basic-tutorial>`
+   * :ref:`고급 튜토리얼 <logging-advanced-tutorial>`
+   * :ref:`로그 쿡북 <logging-cookbook>`
 
 --------------
 
 .. currentmodule:: logging
 
-패키지에는 앞으로 소개될 유용한 핸들러들이 제공된다. 핸들러 중 세개 ((:class:`StreamHandler`,
+이 패키지는 앞으로 소개할 유용한 핸들러들을 제공한다. 핸들러 중 세개 (:class:`StreamHandler`,
 :class:`FileHandler` 그리고 :class:`NullHandler`)는 사실 :mod:`logging` 모듈 자체에
-정의되어있지만, 다른 핸들러들과 함께 여기에 같이 문서화되있음을 알아두자.
+정의되어있지만, 다른 핸들러들과 함께 여기에 같이 문서화되어 있다.
 
 .. _stream-handler:
 
