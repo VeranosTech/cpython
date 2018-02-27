@@ -15,6 +15,7 @@ cd Doc
 make html
 make html
 make html
+make html
 cd ..
 
 find . -name *.exe -delete

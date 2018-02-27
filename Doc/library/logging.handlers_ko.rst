@@ -23,7 +23,7 @@
 .. currentmodule:: logging
 
 이 패키지는 앞으로 소개할 유용한 핸들러들을 제공한다. 핸들러 중 세개 (:class:`StreamHandler`,
-:class:`FileHandler` 그리고 :class:`NullHandler`)는 사실 :mod:`logging` 모듈 자체에
+:class:`FileHandler` 그리고 :class:`NullHandler`)\ 는 사실 :mod:`logging` 모듈 자체에
 정의되어있지만, 다른 핸들러들과 함께 여기에 같이 문서화되어 있다.
 
 .. _stream-handler:
@@ -31,21 +31,21 @@
 StreamHandler
 ^^^^^^^^^^^^^
 
-패키지의 코어에 위치해있는 :class:`StreamHandler` 클래스는 로깅 아웃풋을 *sys.stdout*, *sys.stderr*
-혹은 모든 파일 형태의 오브젝트 (혹은 더 정확하게는 :meth:`write`와 :meth:`flush` 메쏘드를 지원하는
+패키지의 코어에 있는 :class:`StreamHandler` 클래스는 로그 출력을 *sys.stdout*, *sys.stderr*
+혹은 모든 파일 형태의 오브젝트(정확하게는 :meth:`write`\ 와 :meth:`flush` 메쏘드를 지원하는
 모든 오브젝트)에 출력한다.
 
 
 .. class:: StreamHandler(stream=None)
 
-   :class:`StreamHandler` 클래스의 새로운 인스턴스를 반환한다. 만약 *stream*이 지정되어있다면,
-   인스턴스는 로깅 출력에 그것을 사용할 것이다; 지정되어있지 않다면 *sys.stderr*이 사용될 것이다.
+   :class:`StreamHandler` 클래스의 새 인스턴스를 반환한다. 만약 *stream*\ 이 지정되어 있다면,
+   인스턴스는 로깅 출력에 그것을 사용한다. 지정되어 있지 않다면 *sys.stderr*\ 를 사용한다.
 
 
    .. method:: emit(record)
 
       포매터가 지정되어있다면, 레코드를 포맷하는데 쓰인다. 그리고 레코드가 터미네이터와 함께 스트림에 쓰여진다.
-      예외 정보가 있다면, 그것은 :func:`traceback.print_exception`를 이용해 포맷되어진 후
+      예외 정보가 있으면, 그것은 :func:`traceback.print_exception`\ 를 이용해 포맷되어진 후
       스트림에 덧붙여진다.
 
 
@@ -53,7 +53,7 @@ StreamHandler
 
       :meth:`flush` 메쏘드를 호출함으로서 스트림을 플러쉬한다. :meth:`close` 메쏘드가
       :class:`~logging.Handler` 클래스로부터 상속되었기 때문에 아웃풋을 출력하지 않고, 그렇기 때문에
-      별도의 :meth:`flush`가 때때로 호출되어져야 한다는 것을 알아두자.
+      별도의 :meth:`flush`\ 가 때때로 호출되어져야 한다는 것을 알아두자.
 
    .. method:: setStream(stream)
 
@@ -68,10 +68,10 @@ StreamHandler
 
 
 .. versionchanged:: 3.2
-   ``StreamHandler`` 클래스는 이제 디폴트 값으로 ``'\n'``를 가지는 ``terminator`` 속성을 가지며,
+   ``StreamHandler`` 클래스는 이제 디폴트 값으로 ``'\n'``\ 를 가지는 ``terminator`` 속성을 가지며,
    이것은 스트림에 형식화된 레코드를 쓸 때 종결자로 활용된다. 만약 이렇게 새로운 줄을 시작하는 종결자를 원하지
    않는다면, 핸들러 인스턴스의 ``terminator`` 속성을 빈 문자열로 지정해주면 된다. 이전 버전에서는, 종결자는
-   ``'\n'`` 로 고정되어 있었다.
+   ``'\n'``\ 로 고정되어 있었다.
 
 
 .. _file-handler:
