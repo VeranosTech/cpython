@@ -46,7 +46,7 @@
    fileformats.rst
    crypto.rst
    allos_ko.rst
-   concurrency.rst
+   concurrency_ko.rst
    ipc.rst
    netdata.rst
    markup.rst
