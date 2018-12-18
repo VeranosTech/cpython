@@ -5,7 +5,7 @@ git commit -m "automatic commit"
 git push origin korean_37
 
 git checkout -B gh-pages
-git rebase korean
+git rebase korean_37
 
 touch .nojekyll
 
