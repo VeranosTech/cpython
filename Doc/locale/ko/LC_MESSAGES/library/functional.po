@@ -1,0 +1,33 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2001-2017, Python Software Foundation
+# This file is distributed under the same license as the Python package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Python 3.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-26 18:49+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Dong-gweon Oh <flowdas@gmail.com>\n"
+"Language-Team: Korean (https://python.flowdas.com)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../Doc/library/functional.rst:3
+msgid "Functional Programming Modules"
+msgstr "함수형 프로그래밍 모듈"
+
+#: ../Doc/library/functional.rst:5
+msgid ""
+"The modules described in this chapter provide functions and classes that "
+"support a functional programming style, and general operations on "
+"callables."
+msgstr "이 장에서 설명하는 모듈은 함수형 프로그래밍 스타일을 지원하는 함수 및 클래스와 콜러블에 대한 일반 연산을 제공합니다."
+
+#: ../Doc/library/functional.rst:8
+msgid "The following modules are documented in this chapter:"
+msgstr "이 장에서는 다음 모듈에 관해 설명합니다:"

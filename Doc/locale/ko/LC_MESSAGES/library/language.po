@@ -1,0 +1,35 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2001-2017, Python Software Foundation
+# This file is distributed under the same license as the Python package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Python 3.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-26 18:49+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Dong-gweon Oh <flowdas@gmail.com>\n"
+"Language-Team: Korean (https://python.flowdas.com)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../Doc/library/language.rst:5
+msgid "Python Language Services"
+msgstr "파이썬 언어 서비스"
+
+#: ../Doc/library/language.rst:7
+msgid ""
+"Python provides a number of modules to assist in working with the Python "
+"language.  These modules support tokenizing, parsing, syntax analysis, "
+"bytecode disassembly, and various other facilities."
+msgstr ""
+"파이썬은 파이썬 언어로 작업하는 데 도움이 되는 여러 모듈을 제공합니다. 이 모듈들은 토큰화, 구문 분석, 문법 분석, 바이트 코드 역 "
+"어셈블리 및 기타 다양한 기능을 지원합니다."
+
+#: ../Doc/library/language.rst:11
+msgid "These modules include:"
+msgstr "이 모듈들은 다음과 같습니다:"

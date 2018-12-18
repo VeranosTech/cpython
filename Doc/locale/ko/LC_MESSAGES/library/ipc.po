@@ -1,0 +1,43 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2001-2017, Python Software Foundation
+# This file is distributed under the same license as the Python package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Python 3.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-10-23 06:56+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Dong-gweon Oh <flowdas@gmail.com>\n"
+"Language-Team: Korean (https://python.flowdas.com)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../Doc/library/ipc.rst:5
+msgid "Networking and Interprocess Communication"
+msgstr "네트워킹과 프로세스 간 통신"
+
+#: ../Doc/library/ipc.rst:7
+msgid ""
+"The modules described in this chapter provide mechanisms for networking "
+"and inter-processes communication."
+msgstr "이 장에서 설명하는 모듈은 네트워킹과 프로세스 간 통신을 위한 메커니즘을 제공합니다."
+
+#: ../Doc/library/ipc.rst:10
+msgid ""
+"Some modules only work for two processes that are on the same machine, "
+"e.g. :mod:`signal` and :mod:`mmap`.  Other modules support networking "
+"protocols that two or more processes can use to communicate across "
+"machines."
+msgstr ""
+"어떤 모듈은 같은 기계에 있는 두 개의 프로세스에서만 작동합니다 (예를 들어, :mod:`signal`\\과 "
+":mod:`mmap`). 다른 모듈은 두 개 이상의 프로세스가 여러 기계에서 통신하는 데 사용할 수 있는 네트워킹 프로토콜을 "
+"지원합니다."
+
+#: ../Doc/library/ipc.rst:14
+msgid "The list of modules described in this chapter is:"
+msgstr "이 장에서 설명하는 모듈 목록은 다음과 같습니다:"
