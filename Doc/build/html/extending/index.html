@@ -1,0 +1,269 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>파이썬 인터프리터 확장 및 내장 &#8212; Python 3.7.2rc1 documentation</title>
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Python 3.7.2rc1 documentation에서 찾기"
+          href="../_static/opensearch.xml"/>
+    <link rel="author" title="이 문서 정보" href="../about.html" />
+    <link rel="index" title="색인" href="../genindex.html" />
+    <link rel="search" title="검색" href="../search.html" />
+    <link rel="copyright" title="저작권" href="../copyright.html" />
+    <link rel="next" title="1. Extending Python with C or C++" href="extending.html" />
+    <link rel="prev" title="문서로 만들어지지 않은 모듈" href="../library/undoc.html" />
+    <link rel="shortcut icon" type="image/png" href="../_static/py.png" />
+    <link rel="canonical" href="https://docs.python.org/3/extending/index.html" />
+    
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    
+    
+    
+    
+    <style>
+      @media only screen {
+        table.full-width-table {
+            width: 100%;
+        }
+      }
+    </style>
+ 
+
+  </head><body>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>탐색</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="전체 색인"
+             accesskey="I">색인</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python 모듈 목록"
+             >모듈</a> |</li>
+        <li class="right" >
+          <a href="extending.html" title="1. Extending Python with C or C++"
+             accesskey="N">다음</a> |</li>
+        <li class="right" >
+          <a href="../library/undoc.html" title="문서로 만들어지지 않은 모듈"
+             accesskey="P">이전</a> |</li>
+        <li><img src="../_static/py.png" alt=""
+                 style="vertical-align: middle; margin-top: -1px"/></li>
+        <li><a href="https://www.python.org/">Python</a> &#187;</li>
+        <li>
+          <a href="../index.html">3.7.2rc1 Documentation</a> &#187;
+        </li>
+
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="빠른 검색" type="text" name="q" />
+          <input type="submit" value="바로 가기" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>    
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="extending-and-embedding-the-python-interpreter">
+<span id="extending-index"></span><h1>파이썬 인터프리터 확장 및 내장<a class="headerlink" href="#extending-and-embedding-the-python-interpreter" title="제목 주소">¶</a></h1>
+<p>이 문서는 새로운 모듈로 파이썬 인터프리터를 확장하기 위해 C 나 C++로 모듈을 작성하는 방법을 설명합니다. 이러한 모듈은 새로운 함수뿐만 아니라 새로운 객체 형과 메서드를 정의할 수 있습니다. 또한, 확장 언어로 사용하기 위해, 파이썬 인터프리터를 다른 응용 프로그램에 내장시키는 방법에 관해서도 설명합니다. 마지막으로, 하부 운영 체제에서 이 기능을 지원하는 경우, 동적으로 (실행시간에) 인터프리터에 로드될 수 있도록 확장 모듈을 컴파일하고 링크하는 방법을 보여줍니다.</p>
+<p>이 문서는 파이썬에 대한 기본 지식을 전제로 합니다. 언어에 대한 형식적이지 않은 소개는 <a class="reference internal" href="../tutorial/index.html#tutorial-index"><span class="std std-ref">파이썬 자습서</span></a> 를 보십시오. <a class="reference internal" href="../reference/index.html#reference-index"><span class="std std-ref">파이썬 언어 레퍼런스</span></a> 는 보다 형식적인 언어 정의를 제공합니다. <a class="reference internal" href="../library/index.html#library-index"><span class="std std-ref">파이썬 표준 라이브러리</span></a> 는 존재하는 객체 형, 함수 및 모듈(내장된 것과 파이썬으로 작성된 것 모두)을 설명하는데, 이것들이 언어의 응용 범위를 넓힙니다.</p>
+<p>전체 파이썬/C API에 대한 자세한 설명은 별도의 <a class="reference internal" href="../c-api/index.html#c-api-index"><span class="std std-ref">파이썬/C API 레퍼런스 설명서</span></a> 를 참조하십시오.</p>
+<div class="section" id="recommended-third-party-tools">
+<h2>권장 제삼자 도구<a class="headerlink" href="#recommended-third-party-tools" title="제목 주소">¶</a></h2>
+<p>이 지침서는 이 버전의 CPython의 일부로 제공되는, 확장을 만들기 위한 기본 도구만을 다룹니다. <a class="reference external" href="http://cython.org/">Cython</a>, <a class="reference external" href="https://cffi.readthedocs.io">cffi</a>, <a class="reference external" href="http://www.swig.org">SWIG</a> 와 <a class="reference external" href="https://numba.pydata.org/">Numba</a>  와 같은 제삼자 도구는 파이썬을 위한 C와 C++ 확장을 만드는 더 간단하고 세련된 접근법을 제공합니다.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">더 보기</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="https://packaging.python.org/guides/packaging-binary-extensions/">파이썬 패키징 사용자 지침서: 바이너리 확장</a></dt>
+<dd>파이썬 패키징 사용자 지침서는 바이너리 확장의 생성을 단순화하는 몇 가지 사용 가능한 도구를 다루고 있을 뿐만 아니라, 확장 모듈을 만드는 것이 왜 바람직한지 여러 가지 이유에 대해서도 논의합니다.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="creating-extensions-without-third-party-tools">
+<h2>제삼자 도구 없이 확장 만들기<a class="headerlink" href="#creating-extensions-without-third-party-tools" title="제목 주소">¶</a></h2>
+<p>지침서의 이 부문에서는 제삼자 도구의 도움 없이 C와 C++ 확장을 만드는 방법에 관해 설명합니다. 여러분 자신의 C 확장을 만드는 데 권장되는 방법이라기보다는, 주로 도구를 제작하는 사람들을 대상으로 합니다.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">1. Extending Python with C or C++</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#a-simple-example">1.1. A Simple Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#intermezzo-errors-and-exceptions">1.2. Intermezzo: Errors and Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#back-to-the-example">1.3. Back to the Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#the-module-s-method-table-and-initialization-function">1.4. The Module's Method Table and Initialization Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#compilation-and-linkage">1.5. Compilation and Linkage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#calling-python-functions-from-c">1.6. Calling Python Functions from C</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#extracting-parameters-in-extension-functions">1.7. Extracting Parameters in Extension Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#keyword-parameters-for-extension-functions">1.8. Keyword Parameters for Extension Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#building-arbitrary-values">1.9. Building Arbitrary Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#reference-counts">1.10. Reference Counts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#writing-extensions-in-c">1.11. Writing Extensions in C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html#providing-a-c-api-for-an-extension-module">1.12. Providing a C API for an Extension Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="newtypes_tutorial.html">2. Defining Extension Types: Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="newtypes_tutorial.html#the-basics">2.1. The Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes_tutorial.html#adding-data-and-methods-to-the-basic-example">2.2. Adding data and methods to the Basic example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes_tutorial.html#providing-finer-control-over-data-attributes">2.3. Providing finer control over data attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes_tutorial.html#supporting-cyclic-garbage-collection">2.4. Supporting cyclic garbage collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes_tutorial.html#subclassing-other-types">2.5. Subclassing other types</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="newtypes.html">3. Defining Extension Types: Assorted Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="newtypes.html#finalization-and-de-allocation">3.1. Finalization and De-allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes.html#object-presentation">3.2. Object Presentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes.html#attribute-management">3.3. Attribute Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes.html#object-comparison">3.4. Object Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes.html#abstract-protocol-support">3.5. Abstract Protocol Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes.html#weak-reference-support">3.6. Weak Reference Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newtypes.html#more-suggestions">3.7. More Suggestions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">4. Building C and C++ Extensions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="building.html#building-c-and-c-extensions-with-distutils">4.1. Building C and C++ Extensions with distutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building.html#distributing-your-extension-modules">4.2. Distributing your extension modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="windows.html">5. Building C and C++ Extensions on Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#a-cookbook-approach">5.1. A Cookbook Approach</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#differences-between-unix-and-windows">5.2. Differences Between Unix and Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#using-dlls-in-practice">5.3. Using DLLs in Practice</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="embedding-the-cpython-runtime-in-a-larger-application">
+<h2>더 큰 응용 프로그램에 CPython 런타임을 내장하기<a class="headerlink" href="#embedding-the-cpython-runtime-in-a-larger-application" title="제목 주소">¶</a></h2>
+<p>때로는, 파이썬 인터프리터를 메인 응용 프로그램으로 사용하고 그 안에서 실행되는 확장을 만드는 대신, CPython 런타임을 더 큰 응용 프로그램에 내장하는 것이 바람직합니다. 이 절에서는 이를 성공적으로 수행하는 데 관련된 몇 가지 세부 사항에 관해 설명합니다.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="embedding.html">1. 다른 응용 프로그램에 파이썬 내장하기</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="embedding.html#very-high-level-embedding">1.1. 매우 고수준의 내장</a></li>
+<li class="toctree-l2"><a class="reference internal" href="embedding.html#beyond-very-high-level-embedding-an-overview">1.2. 매우 고수준 내장을 넘어서: 개요</a></li>
+<li class="toctree-l2"><a class="reference internal" href="embedding.html#pure-embedding">1.3. 순수한 내장</a></li>
+<li class="toctree-l2"><a class="reference internal" href="embedding.html#extending-embedded-python">1.4. 내장된 파이썬을 확장하기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="embedding.html#embedding-python-in-c">1.5. C++로 파이썬 내장하기</a></li>
+<li class="toctree-l2"><a class="reference internal" href="embedding.html#compiling-and-linking-under-unix-like-systems">1.6. 유닉스 계열 시스템에서 컴파일과 링크하기</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">파이썬 인터프리터 확장 및 내장</a><ul>
+<li><a class="reference internal" href="#recommended-third-party-tools">권장 제삼자 도구</a></li>
+<li><a class="reference internal" href="#creating-extensions-without-third-party-tools">제삼자 도구 없이 확장 만들기</a></li>
+<li><a class="reference internal" href="#embedding-the-cpython-runtime-in-a-larger-application">더 큰 응용 프로그램에 CPython 런타임을 내장하기</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>이전 항목</h4>
+  <p class="topless"><a href="../library/undoc.html"
+                        title="이전 장">문서로 만들어지지 않은 모듈</a></p>
+  <h4>다음 항목</h4>
+  <p class="topless"><a href="extending.html"
+                        title="다음 장">1. Extending Python with C or C++</a></p>
+  <div role="note" aria-label="source link">
+    <h3>현재 문서</h3>
+    <ul class="this-page-menu">
+      <li><a href="../bugs.html">버그 보고하기</a></li>
+      <li>
+        <a href="https://github.com/python/cpython/blob/3.7/Doc/extending/index.rst"
+            rel="nofollow">소스 코드를 보려면
+        </a>
+      </li>
+    </ul>
+  </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>탐색</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="전체 색인"
+             >색인</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python 모듈 목록"
+             >모듈</a> |</li>
+        <li class="right" >
+          <a href="extending.html" title="1. Extending Python with C or C++"
+             >다음</a> |</li>
+        <li class="right" >
+          <a href="../library/undoc.html" title="문서로 만들어지지 않은 모듈"
+             >이전</a> |</li>
+        <li><img src="../_static/py.png" alt=""
+                 style="vertical-align: middle; margin-top: -1px"/></li>
+        <li><a href="https://www.python.org/">Python</a> &#187;</li>
+        <li>
+          <a href="../index.html">3.7.2rc1 Documentation</a> &#187;
+        </li>
+
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="빠른 검색" type="text" name="q" />
+          <input type="submit" value="바로 가기" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>  
+    <div class="footer">
+    &copy; <a href="../copyright.html">저작권</a> 2001-2018, Python Software Foundation.
+    <br />
+    파이썬 소프트웨어 재단은 비영리 법인입니다.
+    <a href="https://www.python.org/psf/donations/">기부를 부탁합니다.</a>
+    <br />
+    최종 업데이트: 12월 27, 2018
+    <a href="../bugs.html">버그를 찾았나요?</a>
+    <br />
+    <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2 를 사용해서 만들었습니다.
+    </div>
+
+  </body>
+</html>

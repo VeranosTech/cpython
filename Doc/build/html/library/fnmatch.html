@@ -1,0 +1,265 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>fnmatch --- 유닉스 파일명 패턴 일치 &#8212; Python 3.7.2rc1 documentation</title>
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Python 3.7.2rc1 documentation에서 찾기"
+          href="../_static/opensearch.xml"/>
+    <link rel="author" title="이 문서 정보" href="../about.html" />
+    <link rel="index" title="색인" href="../genindex.html" />
+    <link rel="search" title="검색" href="../search.html" />
+    <link rel="copyright" title="저작권" href="../copyright.html" />
+    <link rel="next" title="linecache --- 텍스트 줄에 대한 무작위 액세스" href="linecache.html" />
+    <link rel="prev" title="glob --- Unix style pathname pattern expansion" href="glob.html" />
+    <link rel="shortcut icon" type="image/png" href="../_static/py.png" />
+    <link rel="canonical" href="https://docs.python.org/3/library/fnmatch.html" />
+    
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    
+    
+    
+    
+    <style>
+      @media only screen {
+        table.full-width-table {
+            width: 100%;
+        }
+      }
+    </style>
+ 
+
+  </head><body>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>탐색</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="전체 색인"
+             accesskey="I">색인</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python 모듈 목록"
+             >모듈</a> |</li>
+        <li class="right" >
+          <a href="linecache.html" title="linecache --- 텍스트 줄에 대한 무작위 액세스"
+             accesskey="N">다음</a> |</li>
+        <li class="right" >
+          <a href="glob.html" title="glob --- Unix style pathname pattern expansion"
+             accesskey="P">이전</a> |</li>
+        <li><img src="../_static/py.png" alt=""
+                 style="vertical-align: middle; margin-top: -1px"/></li>
+        <li><a href="https://www.python.org/">Python</a> &#187;</li>
+        <li>
+          <a href="../index.html">3.7.2rc1 Documentation</a> &#187;
+        </li>
+
+          <li class="nav-item nav-item-1"><a href="index.html" >파이썬 표준 라이브러리</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="filesys.html" accesskey="U">파일과 디렉터리 액세스</a> &#187;</li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="빠른 검색" type="text" name="q" />
+          <input type="submit" value="바로 가기" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>    
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fnmatch">
+<span id="fnmatch-unix-filename-pattern-matching"></span><h1><a class="reference internal" href="#module-fnmatch" title="fnmatch: Unix shell style filename pattern matching."><code class="xref py py-mod docutils literal notranslate"><span class="pre">fnmatch</span></code></a> --- 유닉스 파일명 패턴 일치<a class="headerlink" href="#module-fnmatch" title="제목 주소">¶</a></h1>
+<p><strong>소스 코드:</strong> <a class="reference external" href="https://github.com/python/cpython/tree/3.7/Lib/fnmatch.py">Lib/fnmatch.py</a></p>
+<span class="target" id="index-0"></span><hr class="docutils" id="index-1" />
+<p>이 모듈은 유닉스 셸 스타일의 와일드카드를 지원하며, 이는 정규식(<a class="reference internal" href="re.html#module-re" title="re: Regular expression operations."><code class="xref py py-mod docutils literal notranslate"><span class="pre">re</span></code></a> 모듈에서 설명합니다)과는 <em>다릅니다</em>. 셸 스타일 와일드카드에 사용되는 특수 문자는 다음과 같습니다:</p>
+<table border="1" class="docutils" id="index-2">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">패턴</th>
+<th class="head">의미</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">*</span></code></td>
+<td>모든 것과 일치합니다</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">?</span></code></td>
+<td>모든 단일 문자와 일치합니다</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">[seq]</span></code></td>
+<td><em>seq</em>의 모든 문자와 일치합니다.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">[!seq]</span></code></td>
+<td><em>seq</em>에 없는 모든 문자와 일치합니다</td>
+</tr>
+</tbody>
+</table>
+<p>리터럴 일치의 경우, 꺾쇠괄호 안에 메타 문자를 넣습니다. 예를 들어, <code class="docutils literal notranslate"><span class="pre">'[?]'</span></code>는 <code class="docutils literal notranslate"><span class="pre">'?'</span></code> 문자와 일치합니다.</p>
+<p id="index-3">Note that the filename separator (<code class="docutils literal notranslate"><span class="pre">'/'</span></code> on Unix) is <em>not</em> special to this
+module.  See module <a class="reference internal" href="glob.html#module-glob" title="glob: Unix shell style pathname pattern expansion."><code class="xref py py-mod docutils literal notranslate"><span class="pre">glob</span></code></a> for pathname expansion (<a class="reference internal" href="glob.html#module-glob" title="glob: Unix shell style pathname pattern expansion."><code class="xref py py-mod docutils literal notranslate"><span class="pre">glob</span></code></a> uses
+<a class="reference internal" href="#fnmatch.filter" title="fnmatch.filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter()</span></code></a> to match pathname segments).  Similarly, filenames starting with
+a period are not special for this module, and are matched by the <code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">?</span></code>
+patterns.</p>
+<dl class="function">
+<dt id="fnmatch.fnmatch">
+<code class="descclassname">fnmatch.</code><code class="descname">fnmatch</code><span class="sig-paren">(</span><em>filename</em>, <em>pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#fnmatch.fnmatch" title="정의 주소">¶</a></dt>
+<dd><p><em>filename</em> 문자열이 <em>pattern</em> 문자열과 일치하는지를 검사하여, <a class="reference internal" href="constants.html#True" title="True"><code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code></a> 나 <a class="reference internal" href="constants.html#False" title="False"><code class="xref py py-const docutils literal notranslate"><span class="pre">False</span></code></a>를 반환합니다. 두 매개 변수는 모두 <a class="reference internal" href="os.path.html#os.path.normcase" title="os.path.normcase"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.normcase()</span></code></a>를 사용하여 대소 문자를 정규화합니다. <a class="reference internal" href="#fnmatch.fnmatchcase" title="fnmatch.fnmatchcase"><code class="xref py py-func docutils literal notranslate"><span class="pre">fnmatchcase()</span></code></a>는 운영 체제의 표준인지에 관계없이, 대소문자를 구분하는 비교를 수행하는 데 사용할 수 있습니다.</p>
+<p>이 예제는 현재 디렉터리의 확장자 <code class="docutils literal notranslate"><span class="pre">.txt</span></code> 인 모든 파일 이름을 인쇄합니다:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fnmatch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;*.txt&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fnmatch.fnmatchcase">
+<code class="descclassname">fnmatch.</code><code class="descname">fnmatchcase</code><span class="sig-paren">(</span><em>filename</em>, <em>pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#fnmatch.fnmatchcase" title="정의 주소">¶</a></dt>
+<dd><p><em>filename</em>이 <em>pattern</em>과 일치하는지를 검사하여, <a class="reference internal" href="constants.html#True" title="True"><code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code></a> 나 <a class="reference internal" href="constants.html#False" title="False"><code class="xref py py-const docutils literal notranslate"><span class="pre">False</span></code></a>를 반환합니다; 비교는 대소 문자를 구분하며, <a class="reference internal" href="os.path.html#os.path.normcase" title="os.path.normcase"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.normcase()</span></code></a>를 적용하지 않습니다.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fnmatch.filter">
+<code class="descclassname">fnmatch.</code><code class="descname">filter</code><span class="sig-paren">(</span><em>names</em>, <em>pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#fnmatch.filter" title="정의 주소">¶</a></dt>
+<dd><p><em>pattern</em>에 일치하는 <em>names</em> 리스트의 부분 집합을 반환합니다. <code class="docutils literal notranslate"><span class="pre">[n</span> <span class="pre">for</span> <span class="pre">n</span> <span class="pre">in</span> <span class="pre">names</span> <span class="pre">if</span> <span class="pre">fnmatch(n,</span> <span class="pre">pattern)]</span></code>과 같지만, 더 효율적으로 구현됩니다.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fnmatch.translate">
+<code class="descclassname">fnmatch.</code><code class="descname">translate</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#fnmatch.translate" title="정의 주소">¶</a></dt>
+<dd><p>셸 스타일의 <em>pattern</em>을 <a class="reference internal" href="re.html#re.match" title="re.match"><code class="xref py py-func docutils literal notranslate"><span class="pre">re.match()</span></code></a>에서 사용하기 위해 정규식으로 변환한 값을 반환합니다.</p>
+<p>예제:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fnmatch</span><span class="o">,</span> <span class="nn">re</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;*.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span>
+<span class="go">&#39;(?s:.*\\.txt)\\Z&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reobj</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;foobar.txt&#39;</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(0, 10), match=&#39;foobar.txt&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="admonition seealso">
+<p class="first admonition-title">더 보기</p>
+<dl class="last docutils">
+<dt>모듈 <a class="reference internal" href="glob.html#module-glob" title="glob: Unix shell style pathname pattern expansion."><code class="xref py py-mod docutils literal notranslate"><span class="pre">glob</span></code></a></dt>
+<dd>유닉스 셸 스타일 경로 확장.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>이전 항목</h4>
+  <p class="topless"><a href="glob.html"
+                        title="이전 장"><code class="docutils literal notranslate"><span class="pre">glob</span></code> --- Unix style pathname pattern expansion</a></p>
+  <h4>다음 항목</h4>
+  <p class="topless"><a href="linecache.html"
+                        title="다음 장"><code class="docutils literal notranslate"><span class="pre">linecache</span></code> --- 텍스트 줄에 대한 무작위 액세스</a></p>
+  <div role="note" aria-label="source link">
+    <h3>현재 문서</h3>
+    <ul class="this-page-menu">
+      <li><a href="../bugs.html">버그 보고하기</a></li>
+      <li>
+        <a href="https://github.com/python/cpython/blob/3.7/Doc/library/fnmatch.rst"
+            rel="nofollow">소스 코드를 보려면
+        </a>
+      </li>
+    </ul>
+  </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>탐색</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="전체 색인"
+             >색인</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python 모듈 목록"
+             >모듈</a> |</li>
+        <li class="right" >
+          <a href="linecache.html" title="linecache --- 텍스트 줄에 대한 무작위 액세스"
+             >다음</a> |</li>
+        <li class="right" >
+          <a href="glob.html" title="glob --- Unix style pathname pattern expansion"
+             >이전</a> |</li>
+        <li><img src="../_static/py.png" alt=""
+                 style="vertical-align: middle; margin-top: -1px"/></li>
+        <li><a href="https://www.python.org/">Python</a> &#187;</li>
+        <li>
+          <a href="../index.html">3.7.2rc1 Documentation</a> &#187;
+        </li>
+
+          <li class="nav-item nav-item-1"><a href="index.html" >파이썬 표준 라이브러리</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="filesys.html" >파일과 디렉터리 액세스</a> &#187;</li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="빠른 검색" type="text" name="q" />
+          <input type="submit" value="바로 가기" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>  
+    <div class="footer">
+    &copy; <a href="../copyright.html">저작권</a> 2001-2018, Python Software Foundation.
+    <br />
+    파이썬 소프트웨어 재단은 비영리 법인입니다.
+    <a href="https://www.python.org/psf/donations/">기부를 부탁합니다.</a>
+    <br />
+    최종 업데이트: 12월 27, 2018
+    <a href="../bugs.html">버그를 찾았나요?</a>
+    <br />
+    <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2 를 사용해서 만들었습니다.
+    </div>
+
+  </body>
+</html>
