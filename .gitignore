@@ -114,3 +114,7 @@ Tools/ssl/win32
 .vs/
 .vscode/
 gmon.out
+
+
+.idea
+*.mo
